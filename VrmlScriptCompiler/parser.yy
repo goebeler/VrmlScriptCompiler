@@ -31,6 +31,9 @@ END  0  "end of file"
   SLASH   "/"
   LPAREN  "("
   RPAREN  ")"
+  LBRACK  "{"
+  RBRACK  "}"
+  FUNCTION "function"
   ;
 
 %token <std::string> IDENTIFIER "identifier"
@@ -41,11 +44,28 @@ END  0  "end of file"
 
 %%
 %start unit;
-unit: assignments exp {drv.result = $2; };
 
+unit: functions			{}
+	;
+
+functions:
+	functions function	{}
+	| function			{}
+	;
+
+function:
+	FUNCTION "identifier" "(" ")" statement_block {}
+	;
+
+statement_block:
+	LBRACK RBRACK						{}
+	| LBRACK assignments exp RBRACK		{drv.result = $3; }
+	| assignments exp
+	;
+	
 assignments:
-	%empty						{}
-	| assignments assignment	{};
+	%empty					{}
+	|assignments assignment	{};
 
 assignment:
 	"identifier" ":=" exp {drv.variables[$1] = $3; };

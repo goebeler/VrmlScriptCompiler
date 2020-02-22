@@ -39,4 +39,9 @@
   <ItemGroup>
     <Flex Include="scanner.ll" />
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="calctest">
+      <Filter>Source Files</Filter>
+    </CopyFileToFolders>
+  </ItemGroup>
 </Project>

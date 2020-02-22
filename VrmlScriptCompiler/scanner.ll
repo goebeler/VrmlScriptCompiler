@@ -36,7 +36,10 @@ blank	[ \t\r]
 "/"        return yy::parser::make_SLASH  (loc);
 "("        return yy::parser::make_LPAREN (loc);
 ")"        return yy::parser::make_RPAREN (loc);
+"{"        return yy::parser::make_LBRACK (loc);
+"}"        return yy::parser::make_RBRACK (loc);
 ":="       return yy::parser::make_ASSIGN (loc);
+"function" return yy::parser::make_FUNCTION(loc);
 
 {int}      return make_NUMBER (yytext, loc);
 {id}       return yy::parser::make_IDENTIFIER (yytext, loc);

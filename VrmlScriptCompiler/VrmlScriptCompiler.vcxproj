@@ -92,6 +92,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,6 +126,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +156,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CopyFileToFolders Include="calctest">
+      <FileType>Document</FileType>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
+    </CopyFileToFolders>
     <ClCompile Include="driver.cc" />
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="scanner.flex.cpp" />
@@ -163,6 +172,14 @@
   <ItemGroup>
     <Bison Include="parser.yy">
       <FileType>Document</FileType>
+      <Verbose Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</Verbose>
+      <Warnings Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">all</Warnings>
+      <Report Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">all</Report>
+      <ReportFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bison.log</ReportFile>
+      <Verbose Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</Verbose>
+      <Warnings Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">all</Warnings>
+      <Report Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">all</Report>
+      <ReportFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bison.log</ReportFile>
     </Bison>
     <Flex Include="scanner.ll">
       <FileType>Document</FileType>

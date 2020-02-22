@@ -30,3 +30,7 @@ _ReSharper*/
 .vs/
 #Nuget packages folder
 packages/
+/VrmlScriptCompiler/location.hh
+/VrmlScriptCompiler/parser.tab.cpp
+/VrmlScriptCompiler/parser.tab.h
+/VrmlScriptCompiler/scanner.flex.cpp
