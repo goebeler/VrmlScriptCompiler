@@ -1,6 +1,4 @@
-function test ()
+function test (value)
 {
-three := 3
-seven := one + two * three
-seven * seven
+	three = 3;
 }

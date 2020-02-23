@@ -27,9 +27,15 @@
     <ClCompile Include="scanner.flex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="nodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nodes.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -43,5 +49,8 @@
     <CopyFileToFolders Include="calctest">
       <Filter>Source Files</Filter>
     </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

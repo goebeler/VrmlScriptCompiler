@@ -1,5 +1,7 @@
 #include "driver.hh"
 #include "parser.tab.h"
+#include <iostream>
+#include <fstream>
 
 driver::driver()
 	:trace_parsing(true), trace_scanning(true)
@@ -10,6 +12,13 @@ driver::driver()
 
 int driver::parse(const std::string& f)
 {
+	{
+		std::ifstream input(f);
+
+		if (input.is_open())
+			std::cout << input.rdbuf() << '\n';
+	}
+	
 	file = f;
 	location.initialize(&file);
 	scan_begin();
@@ -19,4 +28,9 @@ int driver::parse(const std::string& f)
 	scan_end();
 	return res;
 }
+
+void driver::add_function(std::string name, vrmlast::ArgumentList args, vrmlast::StatementList statements)
+{
+}
+
 

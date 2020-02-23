@@ -38,7 +38,9 @@ blank	[ \t\r]
 ")"        return yy::parser::make_RPAREN (loc);
 "{"        return yy::parser::make_LBRACK (loc);
 "}"        return yy::parser::make_RBRACK (loc);
-":="       return yy::parser::make_ASSIGN (loc);
+"="       return yy::parser::make_ASSIGN (loc);
+","       return yy::parser::make_COMMA (loc);
+";"       return yy::parser::make_SEMICOLON (loc);
 "function" return yy::parser::make_FUNCTION(loc);
 
 {int}      return make_NUMBER (yytext, loc);

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include "nodes.hh"
 #include "parser.tab.h"
 
 #define YY_DECL yy::parser::symbol_type yylex(driver& drv)
@@ -10,6 +11,9 @@ YY_DECL;
 
 class driver
 {
+private:
+	std::map<std::string, vrmlast::FunctionDefinition> m_functionDefinitions;
+	
 public:
 	driver();
 
@@ -25,5 +29,8 @@ public:
 
 	bool trace_scanning;
 	yy::location location;
-	
+
+	void add_function(std::string name, vrmlast::ArgumentList args, vrmlast::StatementList statements);
 };
+
+std::ostream& operator<<(std::ostream out, vrmlast::ArgumentList args);

@@ -162,12 +162,14 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </CopyFileToFolders>
     <ClCompile Include="driver.cc" />
+    <ClCompile Include="nodes.cpp" />
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="scanner.flex.cpp" />
     <ClCompile Include="VrmlScriptCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.hh" />
+    <ClInclude Include="nodes.hh" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.yy">
@@ -184,6 +186,9 @@
     <Flex Include="scanner.ll">
       <FileType>Document</FileType>
     </Flex>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

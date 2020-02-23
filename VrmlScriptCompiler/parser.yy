@@ -7,7 +7,8 @@
 
 %code requires{
 	#include <string>
-	class driver;
+	#include "nodes.hh"
+	class driver;		
 }
 
 %param {driver& drv}
@@ -24,7 +25,7 @@
 %define api.token.prefix {TOK_}
 %token
 END  0  "end of file"
-  ASSIGN  ":="
+  ASSIGN  "="
   MINUS   "-"
   PLUS    "+"
   STAR    "*"
@@ -33,12 +34,21 @@ END  0  "end of file"
   RPAREN  ")"
   LBRACK  "{"
   RBRACK  "}"
+  COMMA   ","
+  SEMICOLON ";"
   FUNCTION "function"
   ;
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
-%nterm <int> exp
+%nterm <vrmlast::FunctionDefinitionList> functions
+%nterm <vrmlast::FunctionDefinition> function
+%nterm <vrmlast::Expression> exp assignment functioncall
+%nterm <vrmlast::Statement> statement
+%nterm <vrmlast::StatementList> statement_block statements
+%nterm <vrmlast::ArgumentList> args
+%nterm <vrmlast::ParameterList> parameters
+
 
 %printer { yyo << $$; } <*>;
 
@@ -51,36 +61,64 @@ unit: functions			{}
 functions:
 	functions function	{}
 	| function			{}
+	| %empty
 	;
 
 function:
-	FUNCTION "identifier" "(" ")" statement_block {}
+	FUNCTION "identifier" "(" args ")" statement_block { 
+														$$.set_name($2); 
+														$$.set_arguments($4); 
+														$$.set_statements($6); }
 	;
 
-statement_block:
-	LBRACK RBRACK						{}
-	| LBRACK assignments exp RBRACK		{drv.result = $3; }
-	| assignments exp
+args:
+	args COMMA "identifier"		{ $1.add_argument($3); $$ = $1;}
+	| "identifier"				{ $$.add_argument($1); }
+	| %empty					{ }
+	;
+
+statements:
+	statements statement	{$1.add_statement($2); $$ = $1;}
+	| statement				{$$.add_statement($1);}
+	| %empty				{}
 	;
 	
-assignments:
-	%empty					{}
-	|assignments assignment	{};
+statement_block:
+	LBRACK statements RBRACK	{$$ = $2; }
+	| %empty					{}
+	;
+
+statement:
+	exp ";" {$$.add_expression($1);}
+	;
 
 assignment:
-	"identifier" ":=" exp {drv.variables[$1] = $3; };
+	"identifier" "=" exp  { $$.type = "assignment"; $$.value = "foobar"; }
+	;
+
+parameters: 
+	parameters COMMA exp	{$1.add_parameter($3); $$ = $1;}
+	| exp					{$$.add_parameter($1);}
+	| %empty				{}
+
+
+functioncall:
+	"identifier" "(" parameters ")" ";" {}
+	;
 
 %left "+" "-";
 %left "*" "/";
 
 exp:
 	"number"
-	|"identifier"				{$$ = drv.variables[$1];}
-	| exp "+" exp				{$$ = $1 + $3;}
-	| exp "-" exp				{$$ = $1 - $3;}
-	| exp "*" exp				{$$ = $1 * $3;}
-	| exp "/" exp				{$$ = $1 / $3;}
+	| assignment				{$$ = $1;}
+	|"identifier"				{ }
+//	| exp "+" exp				{$$ = $1 + $3;}
+//	| exp "-" exp				{$$ = $1 - $3;}
+//	| exp "*" exp				{$$ = $1 * $3;}
+//	| exp "/" exp				{$$ = $1 / $3;}
 	| "(" exp ")"				{$$ = $2;}
+	| functioncall				{$$ = $1;}
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m)
