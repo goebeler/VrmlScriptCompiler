@@ -17,6 +17,7 @@ private:
 public:
 	driver();
 
+	vrmlast::ASTNode* m_root;
 	std::map<std::string, int> variables;
 	int result;
 
@@ -31,6 +32,7 @@ public:
 	yy::location location;
 
 	void add_function(std::string name, vrmlast::ArgumentList args, vrmlast::StatementList statements);
+	void set_root(vrmlast::ASTNode* node) { m_root = node; }
 };
 
 std::ostream& operator<<(std::ostream out, vrmlast::ArgumentList args);

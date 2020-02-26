@@ -51,6 +51,8 @@ END  0  "end of file"
 %nterm <vrmlast::ParameterList*> parameters
 %nterm <vrmlast::AssignmentExpression*> assignment
 %nterm <vrmlast::VariableExpression*> variable
+%nterm <vrmlast::Script*> unit
+%nterm <vrmlast::BinaryArithmeticExpression*> binArithExp
 
 
 
@@ -59,13 +61,14 @@ END  0  "end of file"
 %%
 %start unit;
 
-unit: functions			{}
+unit: 
+	functions			{ $$ = new vrmlast::Script(); $$->m_functions = $1; drv.set_root($$); }
 	;
 
 functions:
-	functions function	{}
-	| function			{}
-	| %empty
+	functions function	{ $1->m_functions.push_back($2); $$ = $1; }
+	| function			{ $$ = new vrmlast::FunctionDefinitionList(); $$->m_functions.push_back($1); }
+	| %empty			{ $$ = new vrmlast::FunctionDefinitionList(); }
 	;
 
 function:
@@ -126,17 +129,24 @@ intConstant:
 	"number"					{ $$ = new vrmlast::IntConstantExpression();  $$->set_value($1); }
 	;
 
-exp:
-	intConstant					{$$ = $1;}
-	| assignment				{$$ = $1;}
-	|"identifier"				{ }
-//	| exp "+" exp				{$$ = $1 + $3;}
+binArithExp:
+	exp "+" exp					{
+									$$ = new vrmlast::BinaryArithmeticExpression();
+									$$->m_lhs = $1;
+									$$->m_rhs = $3;
+									$$->m_op = vrmlast::ArithmeticOperatorEnum::PLUS;
+								}
 //	| exp "-" exp				{$$ = $1 - $3;}
 //	| exp "*" exp				{$$ = $1 * $3;}
 //	| exp "/" exp				{$$ = $1 / $3;}
+exp:
+	intConstant					{ $$ = $1; }
+	| assignment				{ $$ = $1; }
+	| binArithExp				{ $$ = $1; }
+	| variable					{ $$ = $1; }
 	| "(" exp ")"				{$$ = $2;}
 	| functioncall				{$$ = $1;}
-	| 
+	| %empty					{}
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m)

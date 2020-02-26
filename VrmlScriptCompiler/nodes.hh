@@ -12,10 +12,14 @@ namespace vrmlast
 	class FunctionCallExpression;
 	class Statement;	
 	class AssignmentExpression;
+	class BinaryArithmeticExpression;
 	class VariableExpression;
 	class IntConstantExpression;
 	class IntConstantExpression;
 	class Expression;
+	class StatementList;
+	class Script;
+	class FunctionDefinitionList;
 
 	class ASTVisitor 
 	{
@@ -28,6 +32,11 @@ namespace vrmlast
 		virtual void visit(AssignmentExpression* a) = 0;
 		virtual void visit(VariableExpression* a) = 0;
 		virtual void visit(IntConstantExpression* a) = 0;
+		virtual void visit(StatementList* s) = 0;
+		virtual void visit(Expression* s) = 0;
+		virtual void visit(Script* s) = 0;
+		virtual void visit(FunctionDefinitionList* s) = 0;
+		virtual void visit(BinaryArithmeticExpression* s) = 0;
 	};
 
 	class ASTNode
@@ -47,6 +56,33 @@ namespace vrmlast
 		// Geerbt über ASTNode
 		virtual std::string to_string() const = 0;
 		virtual void accept(ASTVisitor& visitor) = 0;
+	};
+
+	enum ArithmeticOperatorEnum
+	{
+		PLUS
+	};
+
+	class BinaryArithmeticExpression : public Expression
+	{
+	public:
+		Expression* m_lhs;
+		Expression* m_rhs;
+		ArithmeticOperatorEnum m_op;
+
+		// Geerbt über Expression
+		virtual std::string to_string() const override;
+		virtual void accept(ASTVisitor& visitor) override;
+	};
+
+	class Script : public ASTNode
+	{
+	public:
+		FunctionDefinitionList* m_functions;
+
+		// Geerbt über ASTNode
+		virtual std::string to_string() const override;
+		virtual void accept(ASTVisitor& visitor) override;
 	};
 
 	class VariableExpression : public Expression
@@ -126,8 +162,8 @@ namespace vrmlast
 	{
 	public:
 		std::string m_name;
-		ArgumentList* m_arguments;
-		StatementList* m_statements;
+		ArgumentList* m_arguments = nullptr;
+		StatementList* m_statements = nullptr;
 
 		FunctionDefinition(){}
 		void set_name(std::string name) { m_name = std::move(name); }
@@ -166,18 +202,25 @@ namespace vrmlast
 	class FunctionCallExpression : public Expression
 	{
 	public:
+		std::string m_function_name;
+		ParameterList* m_parameters;
 		std::string to_string() const override;
-		FunctionCallExpression(std::string functionName, ParameterList parameters) {}
+		FunctionCallExpression() {}
 	};
 
-	inline std::ostream& operator<<(std::ostream& out, const Expression* node)
-	{
-		out << node->to_string();
-		return out;
-	}
+	//inline std::ostream& operator<<(std::ostream& out, const Expression* node)
+	//{
+	//	out << node->to_string();
+	//	return out;
+	//}
 
 	inline std::ostream& operator<<(std::ostream& out, const ASTNode* node)
 	{
+		if (!node)
+		{
+			return out;
+		}
+
 		out << node->to_string();
 		return out;
 	}

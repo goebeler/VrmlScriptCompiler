@@ -68,7 +68,7 @@ namespace vrmlast {
 
 	void StatementList::accept(ASTVisitor& visitor)
 	{
-		//visitor.visit(this);
+		visitor.visit(this);
 	}
 
 	void FunctionDefinitionList::add_function(FunctionDefinition* func)
@@ -88,19 +88,22 @@ namespace vrmlast {
 
 	void FunctionDefinitionList::accept(ASTVisitor& visitor)
 	{
+		visitor.visit(this);
 	}
 
 	void Expression::accept(ASTVisitor& visitor)
 	{
+		visitor.visit(this);
 	}
 
 	std::string FunctionDefinition::to_string() const
 	{
-		return "function " + m_name + "(" + m_arguments->to_string() + ") {'\n" + m_statements->to_string() + "\n}";
+		return "function " + m_name + "(" + m_arguments->to_string() + ") {\n" + m_statements->to_string() + "\n}";
 	}
 
 	void FunctionDefinition::accept(ASTVisitor& visitor)
 	{
+		visitor.visit(this);
 	}
 
 	std::string ParameterList::to_string() const
@@ -147,6 +150,26 @@ namespace vrmlast {
 	}
 
 	void IntConstantExpression::accept(ASTVisitor& visitor)
+	{
+		visitor.visit(this);
+	}
+	std::string FunctionCallExpression::to_string() const
+	{
+		return std::string();
+	}
+	std::string Script::to_string() const
+	{
+		return std::string();
+	}
+	void Script::accept(ASTVisitor& visitor)
+	{
+		visitor.visit(this);
+	}
+	std::string BinaryArithmeticExpression::to_string() const
+	{
+		return std::string();
+	}
+	void BinaryArithmeticExpression::accept(ASTVisitor& visitor)
 	{
 		visitor.visit(this);
 	}

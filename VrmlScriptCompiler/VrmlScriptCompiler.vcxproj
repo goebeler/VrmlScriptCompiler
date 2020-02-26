@@ -54,7 +54,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
-    <Import Project="..\..\..\..\..\..\..\tools\win_flex_bison-2.5.22\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.props" />
+    <Import Project="..\..\..\..\..\tools\winflexbison\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -164,12 +164,14 @@
     <ClCompile Include="driver.cc" />
     <ClCompile Include="nodes.cpp" />
     <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="PrintASTVisitor.cpp" />
     <ClCompile Include="scanner.flex.cpp" />
     <ClCompile Include="VrmlScriptCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="driver.hh" />
     <ClInclude Include="nodes.hh" />
+    <ClInclude Include="PrintASTVisitor.hh" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.yy">
@@ -199,6 +201,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\..\..\..\tools\win_flex_bison-2.5.22\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
+    <Import Project="..\..\..\..\..\tools\winflexbison\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
   </ImportGroup>
 </Project>
