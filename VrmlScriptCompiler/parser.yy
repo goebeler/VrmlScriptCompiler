@@ -41,13 +41,17 @@ END  0  "end of file"
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
+%nterm <vrmlast::IntConstantExpression> intConstant
 %nterm <vrmlast::FunctionDefinitionList> functions
 %nterm <vrmlast::FunctionDefinition> function
-%nterm <vrmlast::Expression> exp assignment functioncall
+%nterm <vrmlast::Expression> exp functioncall leftexp
 %nterm <vrmlast::Statement> statement
 %nterm <vrmlast::StatementList> statement_block statements
 %nterm <vrmlast::ArgumentList> args
 %nterm <vrmlast::ParameterList> parameters
+%nterm <vrmlast::AssignmentExpression> assignment
+%nterm <vrmlast::VariableExpression> variable
+
 
 
 %printer { yyo << $$; } <*>;
@@ -92,8 +96,16 @@ statement:
 	exp ";" {$$.add_expression($1);}
 	;
 
+variable:
+	"identifier"	{$$.m_name = $1;}
+	;
+
+leftexp:
+	variable	{$$ = $1;}
+	;
+
 assignment:
-	"identifier" "=" exp  { $$.type = "assignment"; $$.value = "foobar"; }
+	leftexp "=" exp  { $$.m_lhs = $1; $$.m_rhs = $3; }
 	;
 
 parameters: 
@@ -109,8 +121,11 @@ functioncall:
 %left "+" "-";
 %left "*" "/";
 
+intConstant:
+	| "number"					{$$.set_value($1); }
+
 exp:
-	"number"
+	intConstant					{$$ = $1;}
 	| assignment				{$$ = $1;}
 	|"identifier"				{ }
 //	| exp "+" exp				{$$ = $1 + $3;}
@@ -119,6 +134,7 @@ exp:
 //	| exp "/" exp				{$$ = $1 / $3;}
 	| "(" exp ")"				{$$ = $2;}
 	| functioncall				{$$ = $1;}
+	| 
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m)
