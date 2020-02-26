@@ -15,6 +15,7 @@ namespace vrmlast
 	class VariableExpression;
 	class IntConstantExpression;
 	class IntConstantExpression;
+	class Expression;
 
 	class ASTVisitor 
 	{
@@ -36,12 +37,6 @@ namespace vrmlast
 		virtual std::string to_string() const = 0;
 		virtual void accept(ASTVisitor& visitor) = 0;
 	};
-
-	inline std::ostream& operator<<(std::ostream& out, const ASTNode& node)
-	{
-		out << node.to_string();
-		return out;
-	}
 	
 	class Expression : public ASTNode
 	{
@@ -50,8 +45,8 @@ namespace vrmlast
 		std::string m_value;
 
 		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		virtual std::string to_string() const = 0;
+		virtual void accept(ASTVisitor& visitor) = 0;
 	};
 
 	class VariableExpression : public Expression
@@ -95,8 +90,8 @@ namespace vrmlast
 	class AssignmentExpression : public Expression
 	{
 	public:
-		Expression m_lhs;
-		Expression m_rhs;
+		Expression* m_lhs;
+		Expression* m_rhs;
 
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -106,8 +101,8 @@ namespace vrmlast
 	class Statement : public ASTNode
 	{
 	public:
-		std::vector<Expression> m_expressions;
-		void add_expression(Expression exp);
+		std::vector<Expression*> m_expressions;
+		void add_expression(Expression* exp);
 
 
 		// Geerbt über ASTNode
@@ -118,8 +113,8 @@ namespace vrmlast
 	class StatementList : public ASTNode
 	{
 	public:
-		std::vector<Statement> m_statements;
-		void add_statement(Statement statement);
+		std::vector<Statement*> m_statements;
+		void add_statement(Statement* statement);
 		friend std::ostream& operator<<(std::ostream& out, const StatementList& statement_list);
 
 		// Geerbt über ASTNode
@@ -131,13 +126,13 @@ namespace vrmlast
 	{
 	public:
 		std::string m_name;
-		ArgumentList m_arguments;
-		StatementList m_statements;
+		ArgumentList* m_arguments;
+		StatementList* m_statements;
 
 		FunctionDefinition(){}
 		void set_name(std::string name) { m_name = std::move(name); }
-		void set_arguments(ArgumentList arguments) { m_arguments = std::move(arguments); }
-		void set_statements(StatementList statements) { m_statements = std::move(statements); }
+		void set_arguments(ArgumentList* arguments) { m_arguments = arguments; }
+		void set_statements(StatementList* statements) { m_statements = statements; }
 
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -147,8 +142,8 @@ namespace vrmlast
 	class FunctionDefinitionList : public ASTNode
 	{
 	public:
-		std::vector<FunctionDefinition> m_functions;
-		void add_function(FunctionDefinition func);
+		std::vector<FunctionDefinition*> m_functions;
+		void add_function(FunctionDefinition* func);
 
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -160,8 +155,8 @@ namespace vrmlast
 	class ParameterList : public ASTNode
 	{
 	public:
-		std::vector<Expression> m_parameters;
-		void add_parameter(Expression e);
+		std::vector<Expression*> m_parameters;
+		void add_parameter(Expression* e);
 		
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -174,4 +169,16 @@ namespace vrmlast
 		std::string to_string() const override;
 		FunctionCallExpression(std::string functionName, ParameterList parameters) {}
 	};
+
+	inline std::ostream& operator<<(std::ostream& out, const Expression* node)
+	{
+		out << node->to_string();
+		return out;
+	}
+
+	inline std::ostream& operator<<(std::ostream& out, const ASTNode* node)
+	{
+		out << node->to_string();
+		return out;
+	}
 }

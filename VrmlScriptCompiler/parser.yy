@@ -41,16 +41,16 @@ END  0  "end of file"
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
-%nterm <vrmlast::IntConstantExpression> intConstant
-%nterm <vrmlast::FunctionDefinitionList> functions
-%nterm <vrmlast::FunctionDefinition> function
-%nterm <vrmlast::Expression> exp functioncall leftexp
-%nterm <vrmlast::Statement> statement
-%nterm <vrmlast::StatementList> statement_block statements
-%nterm <vrmlast::ArgumentList> args
-%nterm <vrmlast::ParameterList> parameters
-%nterm <vrmlast::AssignmentExpression> assignment
-%nterm <vrmlast::VariableExpression> variable
+%nterm <vrmlast::IntConstantExpression*> intConstant
+%nterm <vrmlast::FunctionDefinitionList*> functions
+%nterm <vrmlast::FunctionDefinition*> function
+%nterm <vrmlast::Expression*> exp functioncall leftexp
+%nterm <vrmlast::Statement*> statement
+%nterm <vrmlast::StatementList*> statement_block statements
+%nterm <vrmlast::ArgumentList*> args
+%nterm <vrmlast::ParameterList*> parameters
+%nterm <vrmlast::AssignmentExpression*> assignment
+%nterm <vrmlast::VariableExpression*> variable
 
 
 
@@ -69,35 +69,36 @@ functions:
 	;
 
 function:
-	FUNCTION "identifier" "(" args ")" statement_block { 
-														$$.set_name($2); 
-														$$.set_arguments($4); 
-														$$.set_statements($6); }
+	FUNCTION "identifier" "(" args ")" statement_block{
+														$$ = new vrmlast::FunctionDefinition();
+														$$->set_name($2); 
+														$$->set_arguments($4); 
+														$$->set_statements($6); }
 	;
 
 args:
-	args COMMA "identifier"		{ $1.add_argument($3); $$ = $1;}
-	| "identifier"				{ $$.add_argument($1); }
-	| %empty					{ }
+	args COMMA "identifier"		{ $1->add_argument($3); $$ = $1; }
+	| "identifier"				{ $$ = new vrmlast::ArgumentList(); $$->add_argument($1); }
+	| %empty					{ $$ = new vrmlast::ArgumentList(); }
 	;
 
 statements:
-	statements statement	{$1.add_statement($2); $$ = $1;}
-	| statement				{$$.add_statement($1);}
-	| %empty				{}
+	statements statement	{ $1->add_statement($2); $$ = $1;}
+	| statement				{ $$ = new vrmlast::StatementList(); $$->add_statement($1); }
+	| %empty				{ $$ = new vrmlast::StatementList(); }
 	;
 	
 statement_block:
-	LBRACK statements RBRACK	{$$ = $2; }
-	| %empty					{}
+	LBRACK statements RBRACK	{ $$ = $2; }
+	| %empty					{ $$ = new vrmlast::StatementList(); }
 	;
 
 statement:
-	exp ";" {$$.add_expression($1);}
+	exp ";" {$$ = new vrmlast::Statement();  $$->add_expression($1); }
 	;
 
 variable:
-	"identifier"	{$$.m_name = $1;}
+	"identifier"	{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
 	;
 
 leftexp:
@@ -105,13 +106,13 @@ leftexp:
 	;
 
 assignment:
-	leftexp "=" exp  { $$.m_lhs = $1; $$.m_rhs = $3; }
+	leftexp "=" exp			{ $$ = new vrmlast::AssignmentExpression();  $$->m_lhs = $1; $$->m_rhs = $3; }
 	;
 
 parameters: 
-	parameters COMMA exp	{$1.add_parameter($3); $$ = $1;}
-	| exp					{$$.add_parameter($1);}
-	| %empty				{}
+	parameters COMMA exp	{ $1->add_parameter($3); $$ = $1;}
+	| exp					{ $$ = new vrmlast::ParameterList();  $$->add_parameter($1); }
+	| %empty				{ $$ = new vrmlast::ParameterList(); }
 
 
 functioncall:
@@ -122,7 +123,8 @@ functioncall:
 %left "*" "/";
 
 intConstant:
-	| "number"					{$$.set_value($1); }
+	"number"					{ $$ = new vrmlast::IntConstantExpression();  $$->set_value($1); }
+	;
 
 exp:
 	intConstant					{$$ = $1;}
