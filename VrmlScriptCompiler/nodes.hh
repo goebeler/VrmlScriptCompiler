@@ -170,26 +170,26 @@ namespace vrmlast
 		friend std::ostream& operator<<(std::ostream& out, const StatementList& statement_list);
 
 		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
 	};
 
 	class FunctionDefinition : public ASTNode
 	{
 	public:
 		std::string m_name;
-		ArgumentList* m_arguments = nullptr;
-		Statement* m_statement = nullptr;
+		ArgumentList* m_arguments{ nullptr };
+		Statement* m_statement{ nullptr };
 		Scope m_scope;
 
-		FunctionDefinition() {}
+		FunctionDefinition() = default;
 		void set_name(std::string name) { m_name = std::move(name); }
 		void set_arguments(ArgumentList* arguments) { m_arguments = arguments; }
 		void set_statement(Statement* statement) { m_statement = statement; }
 
 		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
 	};
 
 	class FunctionDefinitionList : public ASTNode
@@ -198,22 +198,20 @@ namespace vrmlast
 		std::vector<FunctionDefinition*> m_functions;
 		void add_function(FunctionDefinition* func);
 		Scope m_scope;
+		
 		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
 	};
 
-	class Block : public StatementList
+	class Block : public Statement
 	{
 	public:
-		Block() 
-			:m_statements{nullptr} 
-		{}
-
+		Block() = default;
 		Scope m_scope;
-		StatementList* m_statements;
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		StatementList* m_statements{ nullptr };
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
 	};
 
 	class ParameterList : public ASTNode
@@ -223,8 +221,8 @@ namespace vrmlast
 		void add_parameter(Expression* e);
 
 		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
 	};
 
 	class FunctionCallExpression : public Expression

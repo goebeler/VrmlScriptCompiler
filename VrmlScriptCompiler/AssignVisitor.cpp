@@ -12,6 +12,7 @@ void vrmlast::AssignVisitor::visit(FunctionCallExpression* call){}
 void vrmlast::AssignVisitor::visit(Statement* statement){}
 void vrmlast::AssignVisitor::visit(AssignmentExpression* a){}
 void vrmlast::AssignVisitor::visit(IntConstantExpression* a){}
+void vrmlast::AssignVisitor::visit(Block* a){}
 void vrmlast::AssignVisitor::visit(StatementList* s){}
 void vrmlast::AssignVisitor::visit(Expression* s){}
 void vrmlast::AssignVisitor::visit(Script* s){}

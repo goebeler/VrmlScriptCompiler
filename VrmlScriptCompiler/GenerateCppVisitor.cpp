@@ -27,7 +27,7 @@ namespace vrmlast
 
 	void GenerateCppVisitor::visit(FunctionDefinition* func)
 	{
-		func->m_statements->accept(*this);
+		func->m_statement->accept(*this);
 	}
 
 	void GenerateCppVisitor::visit(ParameterList* params)
@@ -138,5 +138,9 @@ namespace vrmlscript
 
 	void GenerateCppVisitor::visit(Block* s)
 	{
+		for(const auto& statement : s->m_statements->m_statements)
+		{
+			statement->accept(*this);
+		}
 	}
 }

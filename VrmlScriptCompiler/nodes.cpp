@@ -99,7 +99,7 @@ namespace vrmlast {
 
 	std::string FunctionDefinition::to_string() const
 	{
-		return "function " + m_name + "(" + m_arguments->to_string() + ") {\n" + m_statements->to_string() + "\n}";
+		return "function " + m_name + "(" + m_arguments->to_string() + ")\n" + m_statement->to_string() + "\n";
 	}
 
 	void FunctionDefinition::accept(ASTVisitor& visitor)
@@ -186,7 +186,7 @@ namespace vrmlast {
 	}
 	std::string Block::to_string() const
 	{
-		return fmt::format("{\n{0}\n}", this->m_statements->to_string());
+		return fmt::format("{{\n{0}\n}}", this->m_statements->to_string());
 	}
 
 	void Block::accept(ASTVisitor& visitor)

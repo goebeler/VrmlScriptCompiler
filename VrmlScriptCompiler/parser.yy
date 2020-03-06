@@ -39,6 +39,11 @@ END  0  "end of file"
   FUNCTION "function"
   ;
 
+//%left SEMICOLON
+//%left ASSIGN
+//%left PLUS
+
+
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
 %nterm <vrmlast::IntConstantExpression*> intConstant
@@ -88,7 +93,6 @@ args:
 	
 statement_block:
 	LBRACK statements RBRACK	{ $$ = new vrmlast::Block(); $$->m_statements = $2; }
-	| %empty					{ $$ = new vrmlast::Block(); }
 	;
 
 statements:
@@ -98,12 +102,12 @@ statements:
 	;
 
 statement:
-	exp ";"						{$$ = new vrmlast::Statement();  $$->add_expression($1); }
-	| statement_block			{$$ = new vrmlast::Block();}
+	statement_block			{$$ = $1;}
+	|exp ";"				{$$ = new vrmlast::Statement();  $$->add_expression($1); }	
 	;
 
 variable:
-	"identifier"	{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
+	"identifier"			{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
 	;
 
 leftexp:
@@ -141,14 +145,15 @@ binArithExp:
 //	| exp "-" exp				{$$ = $1 - $3;}
 //	| exp "*" exp				{$$ = $1 * $3;}
 //	| exp "/" exp				{$$ = $1 / $3;}
+
 exp:
 	intConstant					{ $$ = $1; }
 	| assignment				{ $$ = $1; }
 	| binArithExp				{ $$ = $1; }
 	| variable					{ $$ = $1; }
-	| "(" exp ")"				{$$ = $2;}
-	| functioncall				{$$ = $1;}
-	| %empty					{}
+	| "(" exp ")"				{ $$ = $2;}
+	| functioncall				{ $$ = $1;}
+//	| %empty					{}
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m)
