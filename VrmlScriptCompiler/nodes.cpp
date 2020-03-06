@@ -1,5 +1,6 @@
 #include "nodes.hh"
 #include <numeric>
+#include <fmt/format.h>
 
 namespace vrmlast {
 	std::ostream& operator<<(std::ostream& out, const vrmlast::ArgumentList& args)
@@ -167,9 +168,28 @@ namespace vrmlast {
 	}
 	std::string BinaryArithmeticExpression::to_string() const
 	{
-		return std::string();
+		std::string operator_sign;
+		switch (m_op)
+		{
+		case ArithmeticOperatorEnum::PLUS:
+			operator_sign = "+";
+			break;
+		default:
+			operator_sign = "ERROR";
+			break;
+		}
+		return fmt::format("{0} {1} {2}", m_lhs->to_string(), operator_sign ,m_rhs->to_string());
 	}
 	void BinaryArithmeticExpression::accept(ASTVisitor& visitor)
+	{
+		visitor.visit(this);
+	}
+	std::string Block::to_string() const
+	{
+		return fmt::format("{\n{0}\n}", this->m_statements->to_string());
+	}
+
+	void Block::accept(ASTVisitor& visitor)
 	{
 		visitor.visit(this);
 	}

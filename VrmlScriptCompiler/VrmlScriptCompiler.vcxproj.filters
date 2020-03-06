@@ -33,7 +33,19 @@
     <ClCompile Include="PrintASTVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildExpressionVisitor.cpp">
+    <ClCompile Include="GenerateCppVisitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\fmt-6.1.2\src\format.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libs\fmt-6.1.2\src\posix.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssignVisitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeAnalysis.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -45,6 +57,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PrintASTVisitor.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenerateCppVisitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VrmlVariant.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssignVisitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScopeAnalysis.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

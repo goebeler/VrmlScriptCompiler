@@ -1,6 +1,7 @@
 #include <iostream>
 #include "driver.hh"
-#include "PrintASTVisitor.hh"
+//#include "PrintASTVisitor.hh"
+#include "GenerateCppVisitor.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,7 +18,7 @@ int main(int argc, char *argv[])
 		else
 			res = 1;
 	}
-	vrmlast::PrintASTVisitor printer;
+	vrmlast::GenerateCppVisitor printer;
 	if(drv.m_root)
 		drv.m_root->accept(printer);
 	std::cout << printer.to_string();

@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <map>
 #include <memory>
 #include <iostream>
+#include "VrmlVariant.h"
 
 namespace vrmlast
 {
@@ -10,7 +12,7 @@ namespace vrmlast
 	class FunctionDefinition;
 	class ParameterList;
 	class FunctionCallExpression;
-	class Statement;	
+	class Statement;
 	class AssignmentExpression;
 	class BinaryArithmeticExpression;
 	class VariableExpression;
@@ -20,10 +22,11 @@ namespace vrmlast
 	class StatementList;
 	class Script;
 	class FunctionDefinitionList;
+	class Block;
 
-	class ASTVisitor 
+	class ASTVisitor
 	{
-	public: 
+	public:
 		virtual void visit(ArgumentList* args) = 0;
 		virtual void visit(FunctionDefinition* func) = 0;
 		virtual void visit(ParameterList* params) = 0;
@@ -36,6 +39,7 @@ namespace vrmlast
 		virtual void visit(Expression* s) = 0;
 		virtual void visit(Script* s) = 0;
 		virtual void visit(FunctionDefinitionList* s) = 0;
+		virtual void visit(Block* s) = 0;
 		virtual void visit(BinaryArithmeticExpression* s) = 0;
 	};
 
@@ -46,12 +50,19 @@ namespace vrmlast
 		virtual std::string to_string() const = 0;
 		virtual void accept(ASTVisitor& visitor) = 0;
 	};
-	
+
+	class Scope
+	{
+	public:
+		std::map<std::string, std::unique_ptr<VariableExpression>> m_members;
+		Scope* m_parent{ nullptr };
+	};
+
 	class Expression : public ASTNode
 	{
 	public:
 		std::string m_type;
-		std::string m_value;
+		//std::string m_value;
 
 		// Geerbt über ASTNode
 		virtual std::string to_string() const = 0;
@@ -79,7 +90,7 @@ namespace vrmlast
 	{
 	public:
 		FunctionDefinitionList* m_functions;
-
+		Scope m_scope;
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;
@@ -88,8 +99,13 @@ namespace vrmlast
 	class VariableExpression : public Expression
 	{
 	public:
-		std::string m_name;
+		VariableExpression() {}
+		VariableExpression(std::string name, vrmlscript::VrmlVariant value = std::monostate{})
+			:m_name{ name }, m_value{ value }
+		{}
 
+		std::string m_name;
+		vrmlscript::VrmlVariant m_value;
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;
@@ -100,9 +116,9 @@ namespace vrmlast
 	public:
 		int m_value;
 
-		void set_value(int value) 
-		{ 
-			m_value = value; 
+		void set_value(int value)
+		{
+			m_value = value;
 		}
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -114,8 +130,8 @@ namespace vrmlast
 	public:
 		std::vector<std::string> m_arguments;
 
-		ArgumentList(){}
-		
+		ArgumentList() {}
+
 		void add_argument(std::string name);
 
 		// Geerbt über ASTNode
@@ -133,7 +149,7 @@ namespace vrmlast
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;
 	};
-	
+
 	class Statement : public ASTNode
 	{
 	public:
@@ -145,7 +161,7 @@ namespace vrmlast
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;
 	};
-	
+
 	class StatementList : public ASTNode
 	{
 	public:
@@ -163,12 +179,13 @@ namespace vrmlast
 	public:
 		std::string m_name;
 		ArgumentList* m_arguments = nullptr;
-		StatementList* m_statements = nullptr;
+		Statement* m_statement = nullptr;
+		Scope m_scope;
 
-		FunctionDefinition(){}
+		FunctionDefinition() {}
 		void set_name(std::string name) { m_name = std::move(name); }
 		void set_arguments(ArgumentList* arguments) { m_arguments = arguments; }
-		void set_statements(StatementList* statements) { m_statements = statements; }
+		void set_statement(Statement* statement) { m_statement = statement; }
 
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
@@ -180,20 +197,31 @@ namespace vrmlast
 	public:
 		std::vector<FunctionDefinition*> m_functions;
 		void add_function(FunctionDefinition* func);
-
+		Scope m_scope;
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;
 	};
-	
-	class Block {};	
+
+	class Block : public StatementList
+	{
+	public:
+		Block() 
+			:m_statements{nullptr} 
+		{}
+
+		Scope m_scope;
+		StatementList* m_statements;
+		virtual std::string to_string() const override;
+		virtual void accept(ASTVisitor& visitor) override;
+	};
 
 	class ParameterList : public ASTNode
 	{
 	public:
 		std::vector<Expression*> m_parameters;
 		void add_parameter(Expression* e);
-		
+
 		// Geerbt über ASTNode
 		virtual std::string to_string() const override;
 		virtual void accept(ASTVisitor& visitor) override;

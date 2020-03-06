@@ -18,7 +18,7 @@ public:
 	driver();
 
 	vrmlast::ASTNode* m_root;
-	std::map<std::string, int> variables;
+	
 	int result;
 
 	int parse(const std::string& f);
