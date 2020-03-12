@@ -2,6 +2,7 @@
 #include "driver.hh"
 //#include "PrintASTVisitor.hh"
 #include "GenerateCppVisitor.h"
+#include "ScopeAnalysis.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,8 +20,12 @@ int main(int argc, char *argv[])
 			res = 1;
 	}
 	vrmlast::GenerateCppVisitor printer;
-	if(drv.m_root)
+	if (drv.m_root)
+	{
 		drv.m_root->accept(printer);
+		vrmlast::ScopeAnalysis scope_analyzer;
+		drv.m_root->accept(scope_analyzer);
+	}
 	std::cout << printer.to_string();
 	return res;
 }
