@@ -1,16 +1,19 @@
-#include "nodes.hh"
+#pragma once
+#include <string>
 #include <sstream>
-namespace vrmlast
-{
-	class PrintASTVisitor : public ASTVisitor
+#include "nodes.hh"
+
+namespace vrmlast {
+	class GenerateCppVisitor : public ASTVisitor
 	{
 	private:
 		int m_indent = 0;
 		std::stringstream m_out;
 		void indent();
 		void unindent();
+		void print(std::string);
 	public:
-		PrintASTVisitor();
+		GenerateCppVisitor();
 		// Geerbt über ASTVisitor
 		virtual void visit(ArgumentList* args) override;
 		virtual void visit(FunctionDefinition* func) override;
@@ -28,7 +31,4 @@ namespace vrmlast
 
 		std::string to_string() { return m_out.str(); };
 	};
-
-
-	
 }
