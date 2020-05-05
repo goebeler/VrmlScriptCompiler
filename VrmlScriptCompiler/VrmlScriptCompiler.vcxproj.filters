@@ -39,14 +39,20 @@
     <ClCompile Include="PrintASTVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GenerteCppVisitor.cpp">
+    <ClCompile Include="GenerateCppVisitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fmt\src\format.cc">
-      <Filter>Source Files\fmt</Filter>
+    <ClCompile Include="..\libs\fmt-6.1.2\src\format.cc">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fmt\src\posix.cc">
-      <Filter>Source Files\fmt</Filter>
+    <ClCompile Include="..\libs\fmt-6.1.2\src\posix.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AssignVisitor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScopeAnalysis.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,38 +65,20 @@
     <ClInclude Include="PrintASTVisitor.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\chrono.h">
-      <Filter>Header Files\fmt</Filter>
+    <ClInclude Include="GenerateCppVisitor.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\color.h">
-      <Filter>Header Files\fmt</Filter>
+    <ClInclude Include="ScriptBase.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\compile.h">
-      <Filter>Header Files\fmt</Filter>
+    <ClInclude Include="VrmlVariant.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\core.h">
-      <Filter>Header Files\fmt</Filter>
+    <ClInclude Include="AssignVisitor.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\format.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\format-inl.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\locale.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\ostream.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\posix.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\printf.h">
-      <Filter>Header Files\fmt</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fmt\include\fmt\ranges.h">
-      <Filter>Header Files\fmt</Filter>
+    <ClInclude Include="ScopeAnalysis.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

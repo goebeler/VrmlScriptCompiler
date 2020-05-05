@@ -32,7 +32,7 @@ void vrmlast::PrintASTVisitor::visit(FunctionDefinition* func)
 	m_out << '\n' << std::string(m_indent, '-') << "FunctionDefinition(name = " << func->m_name << ")";
 	indent();
 	func->m_arguments->accept(*this);
-	func->m_statements->accept(*this);
+	func->m_statement->accept(*this);
 	unindent();
 }
 

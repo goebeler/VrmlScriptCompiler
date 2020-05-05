@@ -6,8 +6,6 @@
 driver::driver()
 	:trace_parsing(true), trace_scanning(true)
 {
-	variables["one"] = 1;
-	variables["two"] = 2;
 }
 
 int driver::parse(const std::string& f)

@@ -77,19 +77,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\sandbox\repositories\git\VrmlScriptCompiler\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)libs\fmt-6.1.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\sandbox\repositories\git\VrmlScriptCompiler\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)libs\fmt-6.1.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\sandbox\repositories\git\VrmlScriptCompiler\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)libs\fmt-6.1.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\sandbox\repositories\git\VrmlScriptCompiler\fmt\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)libs\fmt-6.1.2\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -177,66 +177,27 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</DeploymentContent>
     </CopyFileToFolders>
-    <ClCompile Include="..\fmt\src\format.cc" />
-    <ClCompile Include="..\fmt\src\posix.cc" />
-    <ClCompile Include="driver.cc">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="GenerteCppVisitor.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="nodes.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="parser.tab.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="PrintASTVisitor.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="scanner.flex.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
-    <ClCompile Include="VrmlScriptCompiler.cpp">
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</CompileAsManaged>
-      <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</CompileAsManaged>
-    </ClCompile>
+    <ClCompile Include="..\libs\fmt-6.1.2\src\format.cc" />
+    <ClCompile Include="..\libs\fmt-6.1.2\src\posix.cc" />
+    <ClCompile Include="AssignVisitor.cpp" />
+    <ClCompile Include="driver.cc" />
+    <ClCompile Include="GenerateCppVisitor.cpp" />
+    <ClCompile Include="nodes.cpp" />
+    <ClCompile Include="parser.tab.cpp" />
+    <ClCompile Include="PrintASTVisitor.cpp" />
+    <ClCompile Include="scanner.flex.cpp" />
+    <ClCompile Include="ScopeAnalysis.cpp" />
+    <ClCompile Include="VrmlScriptCompiler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\fmt\include\fmt\chrono.h" />
-    <ClInclude Include="..\fmt\include\fmt\color.h" />
-    <ClInclude Include="..\fmt\include\fmt\compile.h" />
-    <ClInclude Include="..\fmt\include\fmt\core.h" />
-    <ClInclude Include="..\fmt\include\fmt\format-inl.h" />
-    <ClInclude Include="..\fmt\include\fmt\format.h" />
-    <ClInclude Include="..\fmt\include\fmt\locale.h" />
-    <ClInclude Include="..\fmt\include\fmt\ostream.h" />
-    <ClInclude Include="..\fmt\include\fmt\posix.h" />
-    <ClInclude Include="..\fmt\include\fmt\printf.h" />
-    <ClInclude Include="..\fmt\include\fmt\ranges.h" />
+    <ClInclude Include="AssignVisitor.h" />
     <ClInclude Include="driver.hh" />
+    <ClInclude Include="GenerateCppVisitor.h" />
     <ClInclude Include="nodes.hh" />
     <ClInclude Include="PrintASTVisitor.hh" />
+    <ClInclude Include="ScopeAnalysis.h" />
+    <ClInclude Include="ScriptBase.h" />
+    <ClInclude Include="VrmlVariant.h" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.yy">
@@ -270,6 +231,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\..\..\..\tools\winflexbison\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
+    <Import Project="..\..\..\..\..\..\..\tools\win_flex_bison-2.5.22\custom_build_rules\win_flex_bison\win_flex_bison_custom_build.targets" />
   </ImportGroup>
 </Project>

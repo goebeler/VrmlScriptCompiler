@@ -39,6 +39,11 @@ END  0  "end of file"
   FUNCTION "function"
   ;
 
+//%left SEMICOLON
+//%left ASSIGN
+//%left PLUS
+
+
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
 %nterm <vrmlast::IntConstantExpression*> intConstant
@@ -46,7 +51,8 @@ END  0  "end of file"
 %nterm <vrmlast::FunctionDefinition*> function
 %nterm <vrmlast::Expression*> exp functioncall leftexp
 %nterm <vrmlast::Statement*> statement
-%nterm <vrmlast::StatementList*> statement_block statements
+%nterm <vrmlast::StatementList*> statements
+%nterm <vrmlast::Block*> statement_block
 %nterm <vrmlast::ArgumentList*> args
 %nterm <vrmlast::ParameterList*> parameters
 %nterm <vrmlast::AssignmentExpression*> assignment
@@ -72,11 +78,11 @@ functions:
 	;
 
 function:
-	FUNCTION "identifier" "(" args ")" statement_block{
+	FUNCTION "identifier" "(" args ")" statement{
 														$$ = new vrmlast::FunctionDefinition();
 														$$->set_name($2); 
 														$$->set_arguments($4); 
-														$$->set_statements($6); }
+														$$->set_statement($6); }
 	;
 
 args:
@@ -84,24 +90,24 @@ args:
 	| "identifier"				{ $$ = new vrmlast::ArgumentList(); $$->add_argument($1); }
 	| %empty					{ $$ = new vrmlast::ArgumentList(); }
 	;
+	
+statement_block:
+	LBRACK statements RBRACK	{ $$ = new vrmlast::Block(); $$->m_statements = $2; }
+	;
 
 statements:
 	statements statement	{ $1->add_statement($2); $$ = $1;}
 	| statement				{ $$ = new vrmlast::StatementList(); $$->add_statement($1); }
 	| %empty				{ $$ = new vrmlast::StatementList(); }
 	;
-	
-statement_block:
-	LBRACK statements RBRACK	{ $$ = $2; }
-	| %empty					{ $$ = new vrmlast::StatementList(); }
-	;
 
 statement:
-	exp ";" {$$ = new vrmlast::Statement();  $$->add_expression($1); }
+	statement_block			{$$ = $1;}
+	|exp ";"				{$$ = new vrmlast::Statement();  $$->add_expression($1); }	
 	;
 
 variable:
-	"identifier"	{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
+	"identifier"			{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
 	;
 
 leftexp:
@@ -139,14 +145,15 @@ binArithExp:
 //	| exp "-" exp				{$$ = $1 - $3;}
 //	| exp "*" exp				{$$ = $1 * $3;}
 //	| exp "/" exp				{$$ = $1 / $3;}
+
 exp:
 	intConstant					{ $$ = $1; }
 	| assignment				{ $$ = $1; }
 	| binArithExp				{ $$ = $1; }
 	| variable					{ $$ = $1; }
-	| "(" exp ")"				{$$ = $2;}
-	| functioncall				{$$ = $1;}
-	| %empty					{}
+	| "(" exp ")"				{ $$ = $2;}
+	| functioncall				{ $$ = $1;}
+//	| %empty					{}
 %%
 
 void yy::parser::error(const location_type& l, const std::string& m)

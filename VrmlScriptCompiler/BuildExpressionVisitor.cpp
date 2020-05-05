@@ -23,7 +23,7 @@ namespace vrmlast
 
 		List<System::Linq::Expressions::MethodCallExpression^>^ build_script(Script* s)
 		{
-			
+			return nullptr;
 		}
 	};
 
@@ -76,13 +76,28 @@ namespace vrmlast
 
 		NetExp^ build_function_body(StatementList* statements)
 		{
-			auto retval = NetExp::Block()
+			auto retval = NetExp::Block();
+			for (const auto& statement : statements->m_statements)
+			{
+				/*switch (statement)
+				{
+				default:
+					break;
+				}*/
+			}
+			return nullptr;
 		}
 
-		NetExp^ buildFunction(FunctionDefinition* functionDefinition)
+		System::Collections::Generic::IEnumerable<System::Linq::Expressions::ParameterExpression^>^ 
+			build_function_parameters(ArgumentList* arguments)
+		{
+			return nullptr;
+		}
+
+		NetExp^ build_function(FunctionDefinition* functionDefinition)
 		{
 			auto bodyExp = build_function_body(functionDefinition->m_statements);
-			auto parameters = build_function_parameters(functionDefinition->m_arguments);
+			auto parametersExp = build_function_parameters(functionDefinition->m_arguments);
 			auto functionExpression = NetExp::Lambda(
 				bodyExp
 				, gcnew System::String(functionDefinition->m_name.c_str())
