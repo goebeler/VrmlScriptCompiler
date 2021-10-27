@@ -15,9 +15,9 @@ namespace vrmlast {
 		return out;
 	}
 
-	void ArgumentList::add_argument(std::string name)
+	void ArgumentList::add_argument(Expression* e)
 	{
-		m_arguments.push_back(name);
+		m_arguments.push_back(e);
 	}
 
 	std::string ArgumentList::to_string() const
@@ -99,7 +99,7 @@ namespace vrmlast {
 
 	std::string FunctionDefinition::to_string() const
 	{
-		return "function " + m_name + "(" + m_arguments->to_string() + ")\n" + m_statement->to_string() + "\n";
+		return "function " + m_name + "(" + m_parameter_list->to_string() + ")\n" + m_statement->to_string() + "\n";
 	}
 
 	void FunctionDefinition::accept(ASTVisitor& visitor)
@@ -112,7 +112,7 @@ namespace vrmlast {
 		std::string result;
 		for (const auto& p : m_parameters)
 		{
-			result += (*p).to_string() + '\n';
+			result += p + '\n';
 		}
 		return result;
 	}
@@ -121,9 +121,9 @@ namespace vrmlast {
 	{
 	}
 
-	void ParameterList::add_parameter(Expression* e)
+	void ParameterList::add_parameter(std::string name)
 	{
-		m_parameters.push_back(e);
+		m_parameters.push_back(name);
 	}
 	
 	std::string AssignmentExpression::to_string() const
@@ -154,10 +154,17 @@ namespace vrmlast {
 	{
 		visitor.visit(this);
 	}
+
 	std::string FunctionCallExpression::to_string() const
 	{
 		return std::string();
 	}
+
+	void FunctionCallExpression::accept(ASTVisitor& visitor)
+	{
+		visitor.visit(this);
+	}
+
 	std::string Script::to_string() const
 	{
 		return std::string();

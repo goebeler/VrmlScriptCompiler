@@ -16,12 +16,12 @@ vrmlast::PrintASTVisitor::PrintASTVisitor()
 	
 }
 
-void vrmlast::PrintASTVisitor::visit(ArgumentList* args)
+void vrmlast::PrintASTVisitor::visit(ParameterList* params)
 {
-	if (!args)
+	if (!params)
 		return;
 
-	m_out << '\n' << std::string(m_indent, '-') << "ArgumentList(size = " << args->m_arguments.size() << ")";
+	m_out << '\n' << std::string(m_indent, '-') << "ParameterList(size = " << params->m_parameters.size() << ")";
 }
 
 void vrmlast::PrintASTVisitor::visit(FunctionDefinition* func)
@@ -31,7 +31,7 @@ void vrmlast::PrintASTVisitor::visit(FunctionDefinition* func)
 
 	m_out << '\n' << std::string(m_indent, '-') << "FunctionDefinition(name = " << func->m_name << ")";
 	indent();
-	func->m_arguments->accept(*this);
+	func->m_parameter_list->accept(*this);
 	func->m_statement->accept(*this);
 	unindent();
 }
@@ -95,15 +95,15 @@ void vrmlast::PrintASTVisitor::visit(BinaryArithmeticExpression* s)
 	unindent();
 }
 
-void vrmlast::PrintASTVisitor::visit(ParameterList* params)
+void vrmlast::PrintASTVisitor::visit(ArgumentList* args)
 {
-	if (!params)
+	if (!args)
 		return;
 
-	m_out << '\n' << std::string(m_indent, '-') << "ParameterList(size = " << params->m_parameters.size() << ")";
+	m_out << '\n' << std::string(m_indent, '-') << "ParameterList(size = " << args->m_arguments.size() << ")";
 
 	indent();
-	for (const auto& parameter : params->m_parameters)
+	for (const auto& parameter : args->m_arguments)
 	{
 		parameter->accept(*this);
 	}
@@ -116,7 +116,7 @@ void vrmlast::PrintASTVisitor::visit(FunctionCallExpression* call)
 
 	m_out << '\n' << std::string(m_indent, '-') << "FunctionCallExpression(callee = " << call->m_function_name << ")";
 	indent();
-	call->m_parameters->accept(*this);
+	call->m_argument_list->accept(*this);
 	unindent();
 }
 

@@ -84,11 +84,11 @@ namespace vrmlast
 		for (const auto& function_definition : s->m_functions)
 		{
 			std::stringstream temp;
-			for (int i = 0; i < function_definition->m_arguments->m_arguments.size(); i++)
+			for (int i = 0; i < function_definition->m_parameter_list->m_arguments.size(); i++)
 			{
 				if (i > 0)
 					temp << ", ";
-				temp << "VrmlVariant " << function_definition->m_arguments->m_arguments[i];
+				temp << "VrmlVariant " << function_definition->m_parameter_list->m_arguments[i];
 			}
 			
 			m_out << fmt::format(

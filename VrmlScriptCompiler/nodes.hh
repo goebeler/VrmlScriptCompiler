@@ -125,20 +125,6 @@ namespace vrmlast
 		virtual void accept(ASTVisitor& visitor) override;
 	};
 
-	class ArgumentList : public ASTNode
-	{
-	public:
-		std::vector<std::string> m_arguments;
-
-		ArgumentList() {}
-
-		void add_argument(std::string name);
-
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
-
 	class AssignmentExpression : public Expression
 	{
 	public:
@@ -178,13 +164,14 @@ namespace vrmlast
 	{
 	public:
 		std::string m_name;
-		ArgumentList* m_arguments{ nullptr };
+		//ArgumentList* m_arguments{ nullptr };
+		ParameterList* m_parameter_list{ nullptr };
 		Statement* m_statement{ nullptr };
 		Scope m_scope;
 
 		FunctionDefinition() = default;
 		void set_name(std::string name) { m_name = std::move(name); }
-		void set_arguments(ArgumentList* arguments) { m_arguments = arguments; }
+		void set_arguments(ParameterList* arguments) { m_parameter_list = arguments; }
 		void set_statement(Statement* statement) { m_statement = statement; }
 
 		// Geerbt über ASTNode
@@ -214,11 +201,26 @@ namespace vrmlast
 		void accept(ASTVisitor& visitor) override;
 	};
 
+	class ArgumentList : public ASTNode
+	{
+	public:
+		std::vector<Expression*> m_arguments;
+
+		ArgumentList() {}
+
+		void add_argument(Expression* expression);
+
+		// Geerbt über ASTNode
+		std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
+	};
+
 	class ParameterList : public ASTNode
 	{
 	public:
-		std::vector<Expression*> m_parameters;
-		void add_parameter(Expression* e);
+
+		std::vector<std::string> m_parameters;
+		void add_parameter(std::string name);
 
 		// Geerbt über ASTNode
 		std::string to_string() const override;
@@ -229,9 +231,14 @@ namespace vrmlast
 	{
 	public:
 		std::string m_function_name;
-		ParameterList* m_parameters;
-		std::string to_string() const override;
-		FunctionCallExpression() {}
+		ArgumentList* m_argument_list;
+		[[nodiscard]] std::string to_string() const override;
+
+		FunctionCallExpression(): m_argument_list(nullptr)
+		{
+		}
+
+		void accept(ASTVisitor& visitor) override;
 	};
 
 	//inline std::ostream& operator<<(std::ostream& out, const Expression* node)

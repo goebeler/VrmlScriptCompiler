@@ -53,7 +53,7 @@ END  0  "end of file"
 %nterm <vrmlast::Statement*> statement
 %nterm <vrmlast::StatementList*> statements
 %nterm <vrmlast::Block*> statement_block
-%nterm <vrmlast::ArgumentList*> args
+%nterm <vrmlast::ArgumentList*> arguments
 %nterm <vrmlast::ParameterList*> parameters
 %nterm <vrmlast::AssignmentExpression*> assignment
 %nterm <vrmlast::VariableExpression*> variable
@@ -78,17 +78,17 @@ functions:
 	;
 
 function:
-	FUNCTION "identifier" "(" args ")" statement{
+	FUNCTION "identifier" "(" parameters ")" statement{
 														$$ = new vrmlast::FunctionDefinition();
 														$$->set_name($2); 
 														$$->set_arguments($4); 
 														$$->set_statement($6); }
 	;
 
-args:
-	args COMMA "identifier"		{ $1->add_argument($3); $$ = $1; }
-	| "identifier"				{ $$ = new vrmlast::ArgumentList(); $$->add_argument($1); }
-	| %empty					{ $$ = new vrmlast::ArgumentList(); }
+parameters:
+	parameters COMMA "identifier"		{ $1->add_parameter($3); $$ = $1; }
+	| "identifier"				{ $$ = new vrmlast::ParameterList(); $$->add_parameter($1); }
+	| %empty					{ $$ = new vrmlast::ParameterList(); }
 	;
 	
 statement_block:
@@ -118,14 +118,14 @@ assignment:
 	leftexp "=" exp			{ $$ = new vrmlast::AssignmentExpression();  $$->m_lhs = $1; $$->m_rhs = $3; }
 	;
 
-parameters: 
-	parameters COMMA exp	{ $1->add_parameter($3); $$ = $1;}
-	| exp					{ $$ = new vrmlast::ParameterList();  $$->add_parameter($1); }
-	| %empty				{ $$ = new vrmlast::ParameterList(); }
+arguments: 
+	arguments COMMA exp	{ $1->add_argument($3); $$ = $1;}
+	| exp					{ $$ = new vrmlast::ArgumentList();  $$->add_argument($1); }
+	| %empty				{ $$ = new vrmlast::ArgumentList(); }
 
 
 functioncall:
-	"identifier" "(" parameters ")" ";" {}
+	"identifier" "(" arguments ")" ";" {}
 	;
 
 %left "+" "-";
