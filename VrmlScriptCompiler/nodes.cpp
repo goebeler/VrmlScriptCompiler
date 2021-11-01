@@ -1,6 +1,7 @@
 #include "nodes.hh"
 #include <numeric>
 #include <fmt/format.h>
+#include <variant>
 
 namespace vrmlast {
 	std::ostream& operator<<(std::ostream& out, const vrmlast::ArgumentList& args)
@@ -191,6 +192,38 @@ namespace vrmlast {
 	{
 		visitor.visit(this);
 	}
+
+	struct add_visitor
+	{
+		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFString string_in) const
+		{
+			return vrmlscript::VrmlVariant{fmt::format("{0}{1}",int_in, string_in)};
+		}
+
+		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFInt32 int2_in) const
+		{
+			return vrmlscript::VrmlVariant{int_in + int2_in};
+		}
+
+		vrmlscript::VrmlVariant operator()(auto int_in, auto string_in)
+		{
+			return vrmlscript::VrmlVariant{};
+		}
+	} adder2;
+
+	vrmlscript::VrmlVariant BinaryArithmeticExpression::evaluate()
+	{
+		/*const auto add = [](auto left, auto right)->vrmlscript::VrmlVariant
+		{
+			using TLEFT = std::decay_t<decltype(left)>;
+			using TRIGHT = std::decay_t<decltype(right)>;
+
+		};*/
+		const add_visitor adder;
+		std::visit(adder2, m_lhs->evaluate(), m_rhs->evaluate());
+	}
+
+
 	std::string Block::to_string() const
 	{
 		return fmt::format("{{\n{0}\n}}", this->m_statements->to_string());

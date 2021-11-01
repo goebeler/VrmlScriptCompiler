@@ -1,6 +1,7 @@
 #pragma once
 #include "nodes.hh"
 #include <string>
+#include "VrmlVariant.h"
 
 namespace vrmlast {
 	class ScopeAnalysis : public ASTVisitor
@@ -8,7 +9,7 @@ namespace vrmlast {
 	private:
 		Expression* m_parent_expression;
 		Scope* m_current_scope{ nullptr };
-		VariableExpression* find_variable(std::string name);
+		vrmlscript::VrmlVariant* find_variable(std::string name);
 	public:
 		// Inherited via ASTVisitor
 		virtual void visit(ArgumentList* args) override;

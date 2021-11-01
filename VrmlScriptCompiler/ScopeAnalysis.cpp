@@ -1,17 +1,18 @@
 #include "ScopeAnalysis.h"
 #include <string>
+#include <cassert>
 
-vrmlast::VariableExpression* vrmlast::ScopeAnalysis::find_variable(std::string name)
+vrmlscript::VrmlVariant* vrmlast::ScopeAnalysis::find_variable(std::string name)
 {
 	auto scope = m_current_scope;
-	vrmlast::VariableExpression* found_variable = nullptr;
+	vrmlscript::VrmlVariant* found_variable = nullptr;
 
 	while (scope != nullptr && found_variable == nullptr)
 	{
 		const auto& found = scope->m_members.find(name);
 		if (found != scope->m_members.end())
 		{
-			found_variable = found->second.get();
+			//found_variable = found->second.get();
 			break;
 		}
 		scope = scope->m_parent;
@@ -29,10 +30,10 @@ void vrmlast::ScopeAnalysis::visit(FunctionDefinition* func)
 	func->m_scope.m_parent = m_current_scope;
 	m_current_scope = &func->m_scope;
 
-	for (const auto& argument : func->m_arguments->m_arguments)
+	for (const auto& parameter : func->m_parameter_list->m_parameters)
 	{
-		func->m_scope.m_members.emplace(
-			std::make_pair(argument,std::make_unique<VariableExpression>(argument)));
+		/*func->m_scope.m_members.emplace(
+			std::make_pair(parameter,std::make_unique<VariableExpression>(parameter)));*/
 	}
 
 	func->m_statement->accept(*this);	
@@ -59,19 +60,34 @@ void vrmlast::ScopeAnalysis::visit(AssignmentExpression* a)
 	a->m_rhs->accept(*this);
 
 	const auto& left = static_cast<VariableExpression*>(a->m_lhs);
-	auto newscope = new Scope();
+	/*auto newscope = new Scope();
 	newscope->m_parent = m_current_scope;
-	m_current_scope = newscope;
-	m_current_scope->m_members.emplace(
+	m_current_scope = newscope;*/
+	auto found_lhs_variable = find_variable(left->m_name);
+	if(found_lhs_variable == nullptr)
+	{
+		m_current_scope->m_members.emplace(
 		std::make_pair(left->m_name, std::make_unique<VariableExpression>(left->m_name)));
-	a->m_lhs = find_variable(left->m_name);
-
-	
+	}
+	else
+	{
+		//a->m_lhs = found_lhs_variable;
+	}
 }
 
 void vrmlast::ScopeAnalysis::visit(VariableExpression* a)
 {
-	auto found_variable = find_variable(a->m_name);
+	if (const auto found_variable = find_variable(a->m_name); found_variable == nullptr)
+	{
+		m_current_scope->m_members.emplace(
+			std::make_pair(
+				a->m_name, 
+				std::unique_ptr<VariableExpression>(a)));
+	}
+	else
+	{
+		//assert(found_variable == a);
+	}
 }
 
 void vrmlast::ScopeAnalysis::visit(IntConstantExpression* a)

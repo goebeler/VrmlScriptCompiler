@@ -67,6 +67,7 @@ namespace vrmlast
 		// Geerbt über ASTNode
 		virtual std::string to_string() const = 0;
 		virtual void accept(ASTVisitor& visitor) = 0;
+		virtual vrmlscript::VrmlVariant evaluate() { return vrmlscript::VrmlVariant(std::monostate());}
 	};
 
 	enum ArithmeticOperatorEnum
@@ -81,9 +82,13 @@ namespace vrmlast
 		Expression* m_rhs;
 		ArithmeticOperatorEnum m_op;
 
+		BinaryArithmeticExpression():m_lhs(nullptr), m_rhs(nullptr), m_op(PLUS)
+		{}
+
 		// Geerbt über Expression
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
+		[[nodiscard]] std::string to_string() const override;
+		void accept(ASTVisitor& visitor) override;
+		vrmlscript::VrmlVariant evaluate() override;
 	};
 
 	class Script : public ASTNode

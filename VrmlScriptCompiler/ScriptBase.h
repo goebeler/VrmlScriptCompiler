@@ -13,7 +13,7 @@ namespace vrmlscript
 				, rhsIntVal = std::get_if<SFInt32>(&rhs);
 				lhsIntVal && rhsIntVal)
 			{
-				return VrmlVariant{ lhsIntVal->m_value + rhsIntVal->m_value };
+				return VrmlVariant{ *lhsIntVal + *rhsIntVal};
 			}
 			else 
 			{
