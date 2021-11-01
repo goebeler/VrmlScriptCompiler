@@ -28,4 +28,7 @@ namespace vrmlast
 
 		std::string to_string() { return m_out.str(); };
 	};
+
+
+	
 }

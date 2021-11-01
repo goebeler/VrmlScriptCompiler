@@ -1,6 +1,7 @@
 #pragma once
-#include "nodes.hh"
+#include <string>
 #include <sstream>
+#include "nodes.hh"
 #include "VrmlVariant.h"
 
 namespace vrmlast
@@ -14,6 +15,7 @@ namespace vrmlast
 		vrmlscript::VrmlVariant m_current_value;
 		void indent();
 		void unindent();
+		void print(std::string);
 	public:
 		GenerateCppVisitor();
 		// Geerbt über ASTVisitor
@@ -35,5 +37,3 @@ namespace vrmlast
 		std::string to_string() { return m_out.str(); };
 	};
 }
-
-
