@@ -5,7 +5,7 @@
 #include <cstring>
 #include <string>
 #include "driver.hh"
-#include "parser.tab.h"
+#include <parser.hpp>
 %}
 
 %option noyywrap nounput noinput batch debug

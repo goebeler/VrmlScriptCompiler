@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include "nodes.hh"
-#include "parser.tab.h"
+#include <parser.hpp>
 
 #define YY_DECL yy::parser::symbol_type yylex(driver& drv)
 
@@ -17,7 +17,7 @@ private:
 public:
 	driver();
 
-	vrmlast::ASTNode* m_root;
+	vrmlast::ASTNode* m_root = nullptr;
 	
 	int result;
 

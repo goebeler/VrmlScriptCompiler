@@ -34,3 +34,5 @@ packages/
 /VrmlScriptCompiler/parser.tab.cpp
 /VrmlScriptCompiler/parser.tab.h
 /VrmlScriptCompiler/scanner.flex.cpp
+
+build**/

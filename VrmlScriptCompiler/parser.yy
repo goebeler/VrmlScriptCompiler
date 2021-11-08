@@ -7,7 +7,7 @@
 
 %code requires{
 	#include <string>
-	#include "nodes.hh"
+	#include <nodes.hh>
 	class driver;		
 }
 

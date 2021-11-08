@@ -1,5 +1,5 @@
 #include "driver.hh"
-#include "parser.tab.h"
+#include <parser.hpp>
 #include <iostream>
 #include <fstream>
 
