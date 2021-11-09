@@ -4,13 +4,6 @@
 namespace stackmachine
 {
 
-	//enum op_code
-	//{
-	//	push,
-	//	pop,
-	//	add,
-	//};
-
 	class stack;
 
 	class operand
@@ -23,13 +16,13 @@ namespace stackmachine
 		}
 	};
 
-	class opcode_operand : public operand
+	class opcode_operand
 	{
 	public:
 		explicit opcode_operand(/*const op_code code*/)
 			/*:operation(code)*/
 		{}
-
+		virtual void execute(stack& current_stack) = 0;
 		/*op_code operation;*/
 	};
 
@@ -37,6 +30,58 @@ namespace stackmachine
 	{
 	public:
 		value_operand() = default;
+	};
+
+
+	class program
+	{
+	public:
+		program()
+		{
+			m_program_memory.resize(100);
+		}
+		
+		void push(opcode_operand* op)
+		{
+			if(m_instruction_pointer >= m_program_memory.size())
+			{
+				m_program_memory.resize(m_program_memory.size() * 2);
+			}
+			m_program_memory[m_instruction_pointer++] = op;
+		}
+
+		[[nodiscard]] unsigned int get_instruction_pointer() const
+		{
+			return m_instruction_pointer;
+		}
+
+		void set_instruction_pointer(unsigned int ip)
+		{
+			if(ip < 0 || ip >= m_program_memory.size())
+				throw std::runtime_error("Can not set instruction pointer. IP's adress exceeds program memory.");
+			m_instruction_pointer = ip;
+		}
+
+		opcode_operand* pop()
+		{
+			if(m_instruction_pointer <= 0)
+				return nullptr;
+			return m_program_memory[--m_instruction_pointer];
+		}
+
+		/*opcode_operand* top()
+		{
+			return m_program_memory[m_instruction_pointer-1];
+		}*/
+
+		[[nodiscard]]bool program_is_empty() const
+		{
+			return m_instruction_pointer < 1;
+		}
+
+	private:
+		unsigned m_instruction_pointer{};
+		std::vector<opcode_operand*> m_program_memory;
 	};
 
 	class stack
@@ -88,7 +133,7 @@ namespace stackmachine
 			
 		}
 
-		void eval(stack& current_stack) override
+		void execute(stack& current_stack) override
 		{
 			current_stack.push(m_value_op);
 		}
@@ -117,7 +162,7 @@ namespace stackmachine
 		{
 		}
 
-		void eval(stack& current_stack) override
+		void execute(stack& current_stack) override
 		{
 			//das ist doof
 			auto* right = static_cast<int_operand*>(current_stack.pop());
@@ -139,7 +184,7 @@ namespace stackmachine
 			
 			do
 			{
-				op->eval(m_stack);
+				op->execute(m_stack);
 				op = m_code.pop();
 			}
 			while ( op );
@@ -159,7 +204,7 @@ namespace stackmachine
 
 	private:
 		stack m_stack;
-		stack m_code;
+		program m_code;
 		
 	};
 }

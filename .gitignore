@@ -36,3 +36,5 @@ packages/
 /VrmlScriptCompiler/scanner.flex.cpp
 
 build**/
+/.idea/
+/_deps/

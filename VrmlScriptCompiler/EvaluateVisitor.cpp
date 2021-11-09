@@ -1,6 +1,7 @@
 #include "EvaluateVisitor.h"
 #include <algorithm>
 #include <cassert>
+#include <ranges>
 #include <stack_machine.hpp>
 
 namespace vrmlast
