@@ -1,5 +1,9 @@
 ﻿#pragma once
 #include "nodes.hh"
+namespace stackmachine
+{
+	class stack_machine;
+}
 
 namespace vrmlast
 {
@@ -7,9 +11,7 @@ namespace vrmlast
 	{
 	public: 
 
-		evaluate_visitor(Script* script):m_script(script)
-		{}
-
+		evaluate_visitor(Script* script);
 		virtual void visit(ArgumentList* args);
 		virtual void visit(FunctionDefinition* func);
 		virtual void visit(ParameterList* params);
@@ -26,6 +28,7 @@ namespace vrmlast
 		virtual void visit(BinaryArithmeticExpression* s);
 
 	private:
+		stackmachine::stack_machine* m_stackmachine {nullptr};
 		Script* m_script;
 		std::map<std::string, vrmlscript::VrmlVariant> m_current_stack_variables;
 	};

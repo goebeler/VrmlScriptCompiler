@@ -24,7 +24,8 @@ namespace vrmlast {
 	std::string ArgumentList::to_string() const
 	{
 		std::string result;
-		return std::accumulate(begin(m_arguments), end(m_arguments), result);
+		//return std::accumulate(begin(m_arguments), end(m_arguments), result);
+		return result;
 	}
 
 	void ArgumentList::accept(ASTVisitor& visitor)
@@ -197,7 +198,7 @@ namespace vrmlast {
 	{
 		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFString string_in) const
 		{
-			return vrmlscript::VrmlVariant{fmt::format("{0}{1}",int_in, string_in)};
+			return vrmlscript::VrmlVariant{fmt::format("{0}{1}",int_in, string_in.to_string())};
 		}
 
 		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFInt32 int2_in) const
@@ -219,8 +220,9 @@ namespace vrmlast {
 			using TRIGHT = std::decay_t<decltype(right)>;
 
 		};*/
-		const add_visitor adder;
+		
 		std::visit(adder2, m_lhs->evaluate(), m_rhs->evaluate());
+		return vrmlscript::VrmlVariant{};
 	}
 
 

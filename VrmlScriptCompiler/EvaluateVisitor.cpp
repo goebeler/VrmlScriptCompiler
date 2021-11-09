@@ -1,9 +1,15 @@
 #include "EvaluateVisitor.h"
 #include <algorithm>
 #include <cassert>
+#include <stack_machine.hpp>
 
 namespace vrmlast
 {
+	evaluate_visitor::evaluate_visitor(Script* script)
+		:m_script(script), m_stackmachine(new stackmachine::stack_machine())
+	{
+	}
+
 	void evaluate_visitor::visit(ArgumentList* args)
 	{
 	}

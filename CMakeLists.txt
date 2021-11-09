@@ -38,10 +38,18 @@ set(SRCFILES
     nodes.cpp
     ScopeAnalysis.cpp
     AssignVisitor.cpp
+    EvaluateVisitor.cpp
+    PrintASTVisitor.cpp
 )
 
 set(HEADER
     driver.hh
+    AssignVisitor.h
+    PrintASTVisitor.hh
+    EvaluateVisitor.h
+    ScopeAnalysis.h
+    VrmlVariant.h
+    nodes.hh
 )
 
 list(TRANSFORM SRCFILES PREPEND VrmlScriptCompiler/)
@@ -59,7 +67,7 @@ endif()
 ADD_FLEX_BISON_DEPENDENCY(vrml-scanner vrml-parser)
 
 add_executable(${PROJECT_NAME} ${SRCFILES} ${HEADER} ${BISON_vrml-parser_OUTPUTS} ${FLEX_vrml-scanner_OUTPUTS})
-target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/VrmlScriptCompiler" "${CMAKE_CURRENT_BINARY_DIR}")
+target_include_directories(${PROJECT_NAME} PUBLIC Stackmachine "${CMAKE_CURRENT_SOURCE_DIR}/VrmlScriptCompiler" "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE StackMachine fmt)
 
 set_target_properties(StackMachine-bin PROPERTIES EXCLUDE_FROM_ALL FALSE)
