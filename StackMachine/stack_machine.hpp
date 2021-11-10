@@ -16,10 +16,10 @@ namespace stackmachine
 		}
 	};
 
-	class opcode_operand
+	class instruction
 	{
 	public:
-		explicit opcode_operand(/*const op_code code*/)
+		explicit instruction(/*const op_code code*/)
 			/*:operation(code)*/
 		{}
 		virtual void execute(stack& current_stack) = 0;
@@ -41,7 +41,7 @@ namespace stackmachine
 			m_program_memory.resize(100);
 		}
 		
-		void push(opcode_operand* op)
+		void append(instruction* op)
 		{
 			if(m_instruction_pointer >= m_program_memory.size())
 			{
@@ -62,14 +62,14 @@ namespace stackmachine
 			m_instruction_pointer = ip;
 		}
 
-		opcode_operand* pop()
+		instruction* pop()
 		{
 			if(m_instruction_pointer <= 0)
 				return nullptr;
 			return m_program_memory[--m_instruction_pointer];
 		}
 
-		/*opcode_operand* top()
+		/*instruction* top()
 		{
 			return m_program_memory[m_instruction_pointer-1];
 		}*/
@@ -81,7 +81,7 @@ namespace stackmachine
 
 	private:
 		unsigned m_instruction_pointer{};
-		std::vector<opcode_operand*> m_program_memory;
+		std::vector<instruction*> m_program_memory;
 	};
 
 	class stack
@@ -124,7 +124,7 @@ namespace stackmachine
 	};
 
 
-	class load_operand : public opcode_operand
+	class load_operand : public instruction
 	{
 	public:
 		explicit load_operand(value_operand* value_op)
@@ -154,11 +154,11 @@ namespace stackmachine
 		int m_value;
 	};
 	
-	class add_operand : public opcode_operand
+	class add_instruction : public instruction
 	{
 	public:
-		explicit add_operand()
-			: opcode_operand(/*op_code::add*/)
+		explicit add_instruction()
+			: instruction(/*op_code::add*/)
 		{
 		}
 
@@ -180,21 +180,21 @@ namespace stackmachine
 
 		void run()
 		{
-			auto* op = m_code.pop();
+			auto* instruction = m_code.pop();
 			
 			do
 			{
-				op->execute(m_stack);
-				op = m_code.pop();
+				instruction->execute(m_stack);
+				instruction = m_code.pop();
 			}
-			while ( op );
+			while ( instruction );
 
 			return;
 		}
 
-		void load (opcode_operand* op)
+		void load (instruction* op)
 		{
-			m_code.push(op);
+			m_code.append(op);
 		}
 
 		operand* get_stack_top()
