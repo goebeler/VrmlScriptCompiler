@@ -2,7 +2,7 @@
 #include <algorithm>
 #include <cassert>
 #include <ranges>
-#include <stack_machine.hpp>
+#include <stack_machine.h>
 
 namespace vrmlast
 {
