@@ -4,16 +4,11 @@
 #include <instruction.h>
 #include <int_operand.h>
 #include <vrml_variant_operand.h>
+#include <overload.h>
 
 namespace stackmachine
 {
-	template<typename ... Ts>
-	struct overload : Ts ...
-	{
-		using Ts::operator() ...;
-	};
-
-    class add_instruction : public instruction
+	class add_instruction : public instruction
 	{
 	public:
 		add_instruction()
