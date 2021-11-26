@@ -6,6 +6,7 @@ load_instruction.cpp
 stack_frame.cpp
 stack_machine.cpp 
 vrml_variant_operand.cpp
+vrml_variable.cpp
 )
 
 set(HEADER 
@@ -21,6 +22,7 @@ stack_frame.h
 stack_machine.h 
 stack.h
 vrml_variant_operand.h
+vrml_variable.h
 )
 
 add_library(${PROJECT_NAME} STATIC ${SRCFILES} ${HEADER})
