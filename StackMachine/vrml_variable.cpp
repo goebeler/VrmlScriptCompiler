@@ -92,4 +92,21 @@ namespace stackmachine
 	{
 		throw std::runtime_error("Can not convert to MFRotation");
 	}
+
+	vrml_variable* undefined_type::operator+(const vrml_variable& right)
+	{
+		return &undefined_type::instance();
+	}
+	vrml_variable* undefined_type::operator+(const sffloat& right)
+	{
+		return &undefined_type::instance();
+	}
+	vrml_variable* vrml_variable_base::operator+(const vrml_variable& right)
+	{
+		return nullptr;
+	}
+	vrml_variable* vrml_variable_base::operator+(const sffloat& right)
+	{
+		return nullptr;
+	}
 }

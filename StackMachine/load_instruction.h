@@ -11,13 +11,13 @@ namespace stackmachine
     class load_instruction : public instruction
 	{
 	public:
-		explicit load_instruction(value_operand* value_op);
+		explicit load_instruction(vrml_variable* value_op);
 			
 
 		void execute(stack& current_stack) override;
 
 	private:
-		value_operand* m_value_op;
+		vrml_variable* m_value_op;
 	};
 }
 

@@ -35,7 +35,7 @@ namespace stackmachine
 			m_code.append(op);
 		}
 
-		operand* get_stack_top()
+		vrml_variable* get_stack_top()
 		{
 			return m_stack.top();
 		}

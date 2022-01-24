@@ -2,9 +2,9 @@
 
 namespace stackmachine
 {
-	void vrml_variant_operand::eval(stack& current_stack)
+	/*void vrml_variant_operand::eval(stack& current_stack)
 	{
-	}
+	}*/
 
 	
 }

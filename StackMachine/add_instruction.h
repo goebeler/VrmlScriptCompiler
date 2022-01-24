@@ -28,8 +28,20 @@ namespace stackmachine
 			//auto* right = static_cast<int_operand*>(current_stack.pop());
 			//auto* left = static_cast<int_operand*>(current_stack.pop());
 
-			auto* right = static_cast<vrml_variant_operand*>(current_stack.pop());
-			auto* left = static_cast<vrml_variant_operand*>(current_stack.pop());
+
+			//works:
+			//auto* right = static_cast<vrml_variant_operand*>(current_stack.pop());
+			//auto* left = static_cast<vrml_variant_operand*>(current_stack.pop());
+
+			/*const auto* right = static_cast<vrml_variable*>(current_stack.pop());
+			auto* left = static_cast<vrml_variable*>(current_stack.pop());
+
+			auto& retval = left->operator+(*right);
+			current_stack.push(&retval);*/
+
+			auto right = current_stack.pop();
+			auto left = current_stack.pop();
+			current_stack.push(left->operator+(*right));
 
 			//current_stack.push(new vrml_variant_operand(std::visit(add_it,left->m_value, right->m_value)));
 			//current_stack.push(new vrml_variant_operand{left + right});

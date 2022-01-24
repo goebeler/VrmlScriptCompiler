@@ -3,7 +3,7 @@
 namespace stackmachine
 {
 
-    stackmachine::load_instruction::load_instruction(value_operand * value_op)
+    stackmachine::load_instruction::load_instruction(vrml_variable * value_op)
         :m_value_op(value_op)
     {
     }

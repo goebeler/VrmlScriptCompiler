@@ -5,8 +5,9 @@
 
 namespace stackmachine
 {
-    class operand;
-    
+    class vrml_variable;
+
+	//template<typename T>
     class stack
 	{
 	public:
@@ -15,7 +16,7 @@ namespace stackmachine
 			m_stack.resize(100);
 		}
 		
-		void push(operand* op)
+		void push(vrml_variable* op)
 		{
 			if(m_stack_pointer >= m_stack.size())
 			{
@@ -24,14 +25,14 @@ namespace stackmachine
 			m_stack[m_stack_pointer++] = op;
 		}
 
-		operand* pop()
+		vrml_variable* pop()
 		{
 			if(m_stack_pointer <= 0)
 				return nullptr;
 			return m_stack[--m_stack_pointer];
 		}
 
-		operand* top()
+		vrml_variable* top()
 		{
 			return m_stack[m_stack_pointer-1];
 		}
@@ -43,7 +44,7 @@ namespace stackmachine
 
 	private:
 		unsigned m_stack_pointer{};
-		std::vector<operand*> m_stack;
+		std::vector<vrml_variable*> m_stack;
 	};
 }
 
