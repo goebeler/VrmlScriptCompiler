@@ -2,7 +2,7 @@
 #include "GenerateCppVisitor.h"
 #include <fmt/format.h>
 #include <math.h>
-#include "ScriptBase.h"
+//#include "ScriptBase.h"
 #include "AssignVisitor.h"
 
 namespace vrmlast
@@ -133,7 +133,7 @@ namespace vrmlscript
 		s->m_rhs->accept(*this);
 		auto right_value = m_current_value;
 
-		m_current_value = vrmlscript::ScriptBase::ArithAdd(left_value, right_value);
+		// m_current_value = vrmlscript::ScriptBase::ArithAdd(left_value, right_value);
 	}
 
 	void GenerateCppVisitor::visit(Block* s)

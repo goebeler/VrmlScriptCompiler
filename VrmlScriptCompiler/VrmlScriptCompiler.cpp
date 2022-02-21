@@ -1,7 +1,8 @@
 #include <iostream>
 #include "driver.hh"
 //#include "PrintASTVisitor.hh"
-#include "GenerateCppVisitor.h"
+//#include "GenerateCppVisitor.h"
+#include "StackMachineVisitor.h"
 #include "ScopeAnalysis.h"
 
 int main(int argc, char *argv[])
@@ -19,7 +20,8 @@ int main(int argc, char *argv[])
 		else
 			res = 1;
 	}
-	vrmlast::GenerateCppVisitor printer;
+	//vrmlast::GenerateCppVisitor printer;
+	vrmlast::StackMachineVisitor printer;
 	if (drv.m_root)
 	{
 		drv.m_root->accept(printer);

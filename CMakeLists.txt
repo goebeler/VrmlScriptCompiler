@@ -34,6 +34,7 @@ add_subdirectory(StackMachine EXCLUDE_FROM_ALL)
 set(SRCFILES
     VrmlScriptCompiler.cpp
     GenerateCppVisitor.cpp
+    StackMachineVisitor.cpp
     driver.cc
     nodes.cpp
     ScopeAnalysis.cpp
@@ -44,6 +45,7 @@ set(SRCFILES
 
 set(HEADER
     driver.hh
+    StackMachineVisitor.h
     AssignVisitor.h
     PrintASTVisitor.hh
     EvaluateVisitor.h

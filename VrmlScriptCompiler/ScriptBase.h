@@ -22,5 +22,5 @@ namespace vrmlscript
 		}
 	};
 
-	ScriptBase::~ScriptBase() {};
+	inline ScriptBase::~ScriptBase() {};
 }

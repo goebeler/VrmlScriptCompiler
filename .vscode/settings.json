@@ -1,5 +1,21 @@
 {
     "files.associations": {
         "variant": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "mfbool",
+        "mffloat",
+        "mfint",
+        "mfnode",
+        "mfrotation",
+        "mfstring",
+        "mftime",
+        "mfvec",
+        "sfbool",
+        "sfnode",
+        "sfrotation",
+        "sftime",
+        "sfvec",
+        "vrmlast"
+    ]
 }

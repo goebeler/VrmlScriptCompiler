@@ -1,23 +1,13 @@
 #pragma once
-#include <string>
-#include <sstream>
 #include "nodes.hh"
 #include "VrmlVariant.h"
 
 namespace vrmlast
 {
-	class GenerateCppVisitor : public ASTVisitor
+	class StackMachineVisitor : public ASTVisitor
 	{
-	private:
-		int m_indent = 0;
-		int m_indent_width = 4;
-		std::stringstream m_out;
-		vrmlscript::VrmlVariant m_current_value;
-		void indent();
-		void unindent();
-		void print(std::string);
 	public:
-		GenerateCppVisitor();
+		StackMachineVisitor();
 		// Geerbt über ASTVisitor
 		void visit(ArgumentList* args) override;
 		void visit(FunctionDefinition* func) override;
@@ -34,6 +24,6 @@ namespace vrmlast
 		void visit(BinaryArithmeticExpression* s) override;
 		void visit(Block* s) override;
 
-		std::string to_string() { return m_out.str(); };
+		std::string to_string() { return "StackMachineVisitor.to_string()"; };
 	};
 }
