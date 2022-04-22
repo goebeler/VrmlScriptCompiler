@@ -171,10 +171,12 @@ namespace vrmlast {
 	{
 		return std::string();
 	}
+	
 	void Script::accept(ASTVisitor& visitor)
 	{
 		visitor.visit(this);
 	}
+
 	std::string BinaryArithmeticExpression::to_string() const
 	{
 		std::string operator_sign;

@@ -54,6 +54,10 @@ set(HEADER
     nodes.hh
 )
 
+set(DATAFILES
+    calctest
+)
+
 list(TRANSFORM SRCFILES PREPEND VrmlScriptCompiler/)
 list(TRANSFORM HEADER PREPEND VrmlScriptCompiler/)
 
@@ -68,8 +72,18 @@ else()
 endif()
 ADD_FLEX_BISON_DEPENDENCY(vrml-scanner vrml-parser)
 
+
+
 add_executable(${PROJECT_NAME} ${SRCFILES} ${HEADER} ${BISON_vrml-parser_OUTPUTS} ${FLEX_vrml-scanner_OUTPUTS})
 target_include_directories(${PROJECT_NAME} PUBLIC Stackmachine "${CMAKE_CURRENT_SOURCE_DIR}/VrmlScriptCompiler" "${CMAKE_CURRENT_BINARY_DIR}")
 target_link_libraries(${PROJECT_NAME} PRIVATE StackMachine fmt)
 
 set_target_properties(StackMachine-bin PROPERTIES EXCLUDE_FROM_ALL FALSE)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+	VS_DEBUGGER_COMMAND_ARGUMENTS "calctest")
+
+add_custom_command ( TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${DATAFILES} $<TARGET_FILE_DIR:${PROJECT_NAME}>
+)
