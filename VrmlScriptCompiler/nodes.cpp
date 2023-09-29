@@ -24,7 +24,9 @@ namespace vrmlast {
 	std::string ArgumentList::to_string() const
 	{
 		std::string result;
-		return std::accumulate(begin(m_arguments), end(m_arguments), result);
+		//return std::accumulate(begin(m_arguments), end(m_arguments), result);
+
+		return std::string{};
 	}
 
 	void ArgumentList::accept(ASTVisitor& visitor)
@@ -126,14 +128,14 @@ namespace vrmlast {
 	{
 		m_parameters.push_back(name);
 	}
-	
+
 	std::string AssignmentExpression::to_string() const
 	{
 		std::string result(m_lhs->to_string());
 		result += " = " + m_rhs->to_string();
 		return result;
 	}
-	
+
 	void AssignmentExpression::accept(ASTVisitor& visitor)
 	{
 		visitor.visit(this);
@@ -186,7 +188,7 @@ namespace vrmlast {
 			operator_sign = "ERROR";
 			break;
 		}
-		return fmt::format("{0} {1} {2}", m_lhs->to_string(), operator_sign ,m_rhs->to_string());
+		return fmt::format("{0} {1} {2}", m_lhs->to_string(), operator_sign, m_rhs->to_string());
 	}
 	void BinaryArithmeticExpression::accept(ASTVisitor& visitor)
 	{
@@ -197,12 +199,12 @@ namespace vrmlast {
 	{
 		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFString string_in) const
 		{
-			return vrmlscript::VrmlVariant{fmt::format("{0}{1}",int_in, string_in)};
+			return vrmlscript::VrmlVariant{ fmt::format("{0}{1}",int_in, string_in.to_string()) };
 		}
 
 		vrmlscript::VrmlVariant operator()(vrmlscript::SFInt32 int_in, vrmlscript::SFInt32 int2_in) const
 		{
-			return vrmlscript::VrmlVariant{int_in + int2_in};
+			return vrmlscript::VrmlVariant{ int_in + int2_in };
 		}
 
 		vrmlscript::VrmlVariant operator()(auto int_in, auto string_in)
@@ -219,8 +221,9 @@ namespace vrmlast {
 			using TRIGHT = std::decay_t<decltype(right)>;
 
 		};*/
-		const add_visitor adder;
+		//const add_visitor adder;
 		std::visit(adder2, m_lhs->evaluate(), m_rhs->evaluate());
+		return {};
 	}
 
 

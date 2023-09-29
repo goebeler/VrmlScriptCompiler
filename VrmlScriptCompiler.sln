@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VrmlScriptCompiler", "VrmlS
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppConsoleTestBench", "CppConsoleTestBench\CppConsoleTestBench.vcxproj", "{7BEDBE46-13AD-4282-9337-EEE1FA82AF68}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StackMachine", "..\..\..\Users\christian.goebeler\source\repos\VrmlScriptCompiler\StackMachine\ConsoleApplication1.vcxproj", "{2EF2034F-369A-41F0-BA28-26663CDB35AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{7BEDBE46-13AD-4282-9337-EEE1FA82AF68}.Release|x64.Build.0 = Release|x64
 		{7BEDBE46-13AD-4282-9337-EEE1FA82AF68}.Release|x86.ActiveCfg = Release|Win32
 		{7BEDBE46-13AD-4282-9337-EEE1FA82AF68}.Release|x86.Build.0 = Release|Win32
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Debug|x64.ActiveCfg = Debug|x64
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Debug|x64.Build.0 = Debug|x64
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Debug|x86.ActiveCfg = Debug|Win32
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Debug|x86.Build.0 = Debug|Win32
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Release|x64.ActiveCfg = Release|x64
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Release|x64.Build.0 = Release|x64
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Release|x86.ActiveCfg = Release|Win32
+		{2EF2034F-369A-41F0-BA28-26663CDB35AB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
