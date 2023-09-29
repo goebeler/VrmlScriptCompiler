@@ -38,3 +38,7 @@ packages/
 build**/
 /.idea/
 /_deps/
+/CMakeCache.txt
+/cmake/
+/CMakeFiles/
+*.cmake

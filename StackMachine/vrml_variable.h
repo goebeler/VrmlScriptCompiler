@@ -36,6 +36,7 @@ namespace stackmachine
 
 		virtual vrml_variable* operator+(const vrml_variable& right) = 0;
 		virtual vrml_variable* operator+(const sffloat& right) = 0;
+		virtual const std::string to_string() const;
 
 		virtual ~vrml_variable() = 0;
 

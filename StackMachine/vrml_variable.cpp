@@ -109,4 +109,9 @@ namespace stackmachine
 	{
 		return nullptr;
 	}
+
+	const std::string vrml_variable::to_string() const
+	{
+		return "";
+	}
 }

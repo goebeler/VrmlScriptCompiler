@@ -6,6 +6,7 @@
 #include <stack.h>
 #include <value_operand.h>
 #include <vrml_variable.h>
+#include <fmt/core.h>
 
 namespace stackmachine
 {
@@ -51,7 +52,12 @@ namespace stackmachine
 	
 	class sfint32: public vrml_variable_base
 	{
-	public: int32_t value;
+	public: 
+		int32_t value;
+		const std::string to_string() const override
+		{
+			return fmt::format("{} (int)", value);
+		}
 	};
 
 	class sftime: vrml_variable_base {};
@@ -73,6 +79,11 @@ namespace stackmachine
 		{
 			auto retval = new sffloat(value + ((sffloat&)right).value);
 			return retval;
+		}
+
+		const std::string to_string() const override
+		{
+			return fmt::format("{} (float)", value);
 		}
 	};
 	class sfstring: vrml_variable_base {};
