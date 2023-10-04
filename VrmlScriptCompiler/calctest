@@ -1,5 +1,20 @@
-function test (value)
-{
-	three = 3;
-	two = 2 + three;
-}
+function initialize()
+		{
+			var target = 'World';
+			sayHello(target);
+
+			print('say ' + target);
+
+			if(false)
+			{
+				var foo = 42;
+			}
+
+			print('foo = ' + foo);
+		}
+
+		function sayHello(name)
+		{
+			print('Hello ' + name);
+			name += 'WHAT';
+		}

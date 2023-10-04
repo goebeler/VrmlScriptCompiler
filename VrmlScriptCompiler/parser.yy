@@ -25,27 +25,45 @@
 %define api.token.prefix {TOK_}
 %token
 END  0  "end of file"
-  ASSIGN  "="
-  MINUS   "-"
-  PLUS    "+"
-  STAR    "*"
-  SLASH   "/"
-  LPAREN  "("
-  RPAREN  ")"
-  LBRACK  "{"
-  RBRACK  "}"
-  COMMA   ","
-  SEMICOLON ";"
-  FUNCTION "function"
-  ;
+//ASSIGN  "="
+//MINUS   "-"
+//PLUS    "+"
+//MULTIPLY    "*"
+//DIVIDE   "/"
+LPAREN  "("
+RPAREN  ")"
+LBRACK  "{"
+RBRACK  "}"
+COMMA   ","
+SEMICOLON ";"
+FUNCTION "function"
+NEW
+VAR	  "var"
+NULL  "NULL"
+;
 
 //%left SEMICOLON
 //%left ASSIGN
 //%left PLUS
 
-
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
+
+%right  tASSIGN tPLUSEQ tMINUSEQ tMULTIPLYEQ tDIVIDEEQ tMODEQ tRSHIFTEQ tLSHIFTEQ tRSHIFTFILLEQ tANDEQ tXOREQ tOREQ
+%left   tCONDTEST tCONDSEP
+%left   tLOR
+%left   tLAND
+%left   tOR
+%left   tXOR
+%left   tAND
+%left   tEQ tNE
+%left   tLT tLE tGE tGT
+%left   tRSHIFT tLSHIFT tRSHIFTFILL
+%left   tPLUS tMINUS
+%left   tMULTIPLY tDIVIDE tMOD
+%right  tNOT tNEG tONESCOMP tINCREMENT tDECREMENT
+%left   tDOT RBRACK LBRACK
+
 %nterm <vrmlast::IntConstantExpression*> intConstant
 %nterm <vrmlast::FunctionDefinitionList*> functions
 %nterm <vrmlast::FunctionDefinition*> function
@@ -56,7 +74,8 @@ END  0  "end of file"
 %nterm <vrmlast::ArgumentList*> arguments
 %nterm <vrmlast::ParameterList*> parameters
 %nterm <vrmlast::AssignmentExpression*> assignment
-%nterm <vrmlast::VariableExpression*> variable
+%nterm <vrmlast::VariableExpression*> variable_reference
+%nterm <vrmlast::VariableDeclarationExpression*> variable_decl
 %nterm <vrmlast::Script*> unit
 %nterm <vrmlast::BinaryArithmeticExpression*> binArithExp
 
@@ -78,7 +97,7 @@ functions:
 	;
 
 function:
-	FUNCTION "identifier" "(" parameters ")" statement{
+	FUNCTION IDENTIFIER "(" parameters ")" statement{
 														$$ = new vrmlast::FunctionDefinition();
 														$$->set_name($2); 
 														$$->set_arguments($4); 
@@ -86,8 +105,8 @@ function:
 	;
 
 parameters:
-	parameters COMMA "identifier"		{ $1->add_parameter($3); $$ = $1; }
-	| "identifier"				{ $$ = new vrmlast::ParameterList(); $$->add_parameter($1); }
+	parameters COMMA IDENTIFIER		{ $1->add_parameter($3); $$ = $1; }
+	| IDENTIFIER				{ $$ = new vrmlast::ParameterList(); $$->add_parameter($1); }
 	| %empty					{ $$ = new vrmlast::ParameterList(); }
 	;
 	
@@ -106,12 +125,15 @@ statement:
 	|exp ";"				{$$ = new vrmlast::Statement();  $$->add_expression($1); }	
 	;
 
-variable:
-	"identifier"			{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
+variable_decl:
+	VAR IDENTIFIER		{$$ = = new vrmlast::VariableDeclarationExpression();  $$->m_name = $2;}
+
+variable_reference:
+	IDENTIFIER			{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
 	;
 
 leftexp:
-	variable	{$$ = $1;}
+	variable_reference	{$$ = $1;}
 	;
 
 assignment:
@@ -125,7 +147,7 @@ arguments:
 
 
 functioncall:
-	"identifier" "(" arguments ")" ";" {}
+	IDENTIFIER "(" arguments ")" ";" {}
 	;
 
 %left "+" "-";
@@ -150,7 +172,7 @@ exp:
 	intConstant					{ $$ = $1; }
 	| assignment				{ $$ = $1; }
 	| binArithExp				{ $$ = $1; }
-	| variable					{ $$ = $1; }
+	| variable_reference		{ $$ = $1; }
 	| "(" exp ")"				{ $$ = $2;}
 	| functioncall				{ $$ = $1;}
 //	| %empty					{}

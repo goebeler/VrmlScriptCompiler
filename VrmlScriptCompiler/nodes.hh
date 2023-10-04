@@ -116,6 +116,21 @@ namespace vrmlast
 		virtual void accept(ASTVisitor& visitor) override;
 	};
 
+	class VariableDeclarationExpression : public Expression
+	{
+	public:
+		VariableDeclarationExpression() {}
+		VariableDeclarationExpression(std::string name, vrmlscript::VrmlVariant value = std::monostate{})
+			:m_name{ name }
+		{}
+
+		std::string m_name;
+
+		// Geerbt über ASTNode
+		virtual std::string to_string() const override;
+		virtual void accept(ASTVisitor& visitor) override;
+	};
+
 	class IntConstantExpression : public Expression
 	{
 	public:

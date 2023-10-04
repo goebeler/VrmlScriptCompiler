@@ -143,10 +143,22 @@ namespace vrmlast {
 	{
 		return m_name;
 	}
+
+	std::string VariableDeclarationExpression::to_string() const
+	{
+		return m_name;
+	}
+
 	void VariableExpression::accept(ASTVisitor& visitor)
 	{
 		visitor.visit(this);
 	}
+
+	void VariableDeclarationExpression::accept(ASTVisitor& visitor)
+	{
+		visitor.visit(this);
+	}
+
 	std::string IntConstantExpression::to_string() const
 	{
 		return std::to_string(m_value);
