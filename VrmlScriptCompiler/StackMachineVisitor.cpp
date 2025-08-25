@@ -8,15 +8,16 @@
 namespace vrmlast
 {
 	StackMachineVisitor::StackMachineVisitor()
+		:m_stackmachine(std::make_unique<stackmachine::stack_machine>())
 	{
-		stackmachine::stack_machine machine;
+		/*stackmachine::stack_machine machine;
 		machine.load(new stackmachine::add_instruction());
 		machine.load(new stackmachine::load_instruction(new stackmachine::sffloat(1.0f)));
 		machine.load(new stackmachine::add_instruction());
 		machine.load(new stackmachine::load_instruction(new stackmachine::sffloat(17.5f)));
 		machine.load(new stackmachine::load_instruction(new stackmachine::sffloat(52.0f)));
 
-		machine.run();	
+		machine.run();	*/
 	}
 
 	void StackMachineVisitor::visit(ArgumentList* args)
@@ -25,6 +26,7 @@ namespace vrmlast
 
 	void StackMachineVisitor::visit(FunctionDefinition* func)
 	{
+		m_stackmachine->start_function(func->m_name);
 		func->m_statement->accept(*this);
 	}
 
@@ -73,12 +75,15 @@ namespace vrmlast
 
 	void StackMachineVisitor::visit(FunctionDefinitionList* s)
 	{
-
+		for(const auto& function : s->m_functions)
+		{
+			function->accept(*this);
+		}
 	}
 
 	void StackMachineVisitor::visit(Script* s)
 	{
-
+		s->m_functions->accept(*this);
 	}
 
 	void StackMachineVisitor::visit(BinaryArithmeticExpression* s)

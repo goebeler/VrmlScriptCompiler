@@ -1,21 +1,19 @@
 #ifndef INSTRUCTION_H
 #define INSTRUCTION_H
 
-#include <stack.h>
+#include "stack.h"
 
-namespace stackmachine
-{
-    class instruction
-	{
-	public:
-		virtual ~instruction() = 0;
-		virtual void execute(stack& current_stack) = 0;
-	};
+namespace stackmachine {
+enum class instruction_type { RETURN, LOAD, ADD };
 
-	inline instruction::~instruction()
-	{
-		
-	}
-}
+class instruction {
+public:
+  virtual ~instruction() = 0;
+  virtual void execute(stack &current_stack) = 0;
+  virtual instruction_type get_type() = 0;
+};
+
+inline instruction::~instruction() {}
+} // namespace stackmachine
 
 #endif

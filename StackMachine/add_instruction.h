@@ -8,6 +8,13 @@
 
 namespace stackmachine
 {
+	class return_instrucion : public instruction
+	{
+		// Geerbt über instruction
+		virtual void execute(stack& current_stack) override;
+		virtual instruction_type get_type() override;
+	};
+
 	class add_instruction : public instruction
 	{
 	public:
@@ -46,6 +53,11 @@ namespace stackmachine
 			//current_stack.push(new vrml_variant_operand(std::visit(add_it,left->m_value, right->m_value)));
 			//current_stack.push(new vrml_variant_operand{left + right});
 
+		}
+
+		instruction_type get_type() override
+		{
+			return instruction_type::ADD;
 		}
 	};
 }

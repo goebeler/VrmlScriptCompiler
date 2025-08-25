@@ -25,6 +25,13 @@ namespace stackmachine
 			m_program_memory[m_instruction_pointer++] = op;
 		}
 
+		instruction* peek()
+		{
+			if(m_instruction_pointer <= 0)
+				return nullptr;
+			return m_program_memory[m_instruction_pointer-1];
+		}
+
 		[[nodiscard]] unsigned int get_instruction_pointer() const
 		{
 			return m_instruction_pointer;

@@ -1,6 +1,8 @@
 #pragma once
+#include <memory>
 #include "nodes.hh"
 #include "VrmlVariant.h"
+#include "stack_machine.h"
 
 namespace vrmlast
 {
@@ -25,5 +27,8 @@ namespace vrmlast
 		void visit(Block* s) override;
 
 		std::string to_string() { return "StackMachineVisitor.to_string()"; };
+
+	private:
+		std::unique_ptr<stackmachine::stack_machine> m_stackmachine;
 	};
 }
