@@ -1,38 +1,39 @@
 #pragma once
 
-#include <string>
-#include <map>
 #include "nodes.hh"
-#include <parser.hpp>
+#include "vrml_parser.hpp"
+#include <map>
+#include <string>
 
-#define YY_DECL yy::parser::symbol_type yylex(driver& drv)
+
+#define YY_DECL yy::parser::symbol_type yylex(driver &drv)
 
 YY_DECL;
 
-class driver
-{
+class driver {
 private:
-	std::map<std::string, vrmlast::FunctionDefinition> m_functionDefinitions;
-	
+  std::map<std::string, vrmlast::FunctionDefinition> m_functionDefinitions;
+
 public:
-	driver();
+  driver();
 
-	vrmlast::ASTNode* m_root = nullptr;
-	
-	int result;
+  vrmlast::ASTNode *m_root = nullptr;
 
-	int parse(const std::string& f);
-	std::string file;
-	bool trace_parsing;
+  int result;
 
-	void scan_begin();
-	void scan_end();
+  int parse(const std::string &f);
+  std::string file;
+  bool trace_parsing;
 
-	bool trace_scanning;
-	yy::location location;
+  void scan_begin();
+  void scan_end();
 
-	void add_function(std::string name, vrmlast::ArgumentList args, vrmlast::StatementList statements);
-	void set_root(vrmlast::ASTNode* node) { m_root = node; }
+  bool trace_scanning;
+  yy::location location;
+
+  void add_function(std::string name, vrmlast::ArgumentList args,
+                    vrmlast::StatementList statements);
+  void set_root(vrmlast::ASTNode *node) { m_root = node; }
 };
 
-std::ostream& operator<<(std::ostream out, vrmlast::ArgumentList args);
+std::ostream &operator<<(std::ostream out, vrmlast::ArgumentList args);

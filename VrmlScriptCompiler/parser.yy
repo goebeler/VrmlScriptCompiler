@@ -1,5 +1,6 @@
 %skeleton "lalr1.cc"
 %require "3.5"
+%language "c++"
 %defines
 %define api.token.constructor
 %define api.value.type variant
@@ -8,6 +9,7 @@
 %code requires{
 	#include <string>
 	#include <nodes.hh>
+	#include "VrmlScanner.h"
 	class driver;		
 }
 
@@ -16,7 +18,7 @@
 %locations
 
 %define parse.trace
-%define parse.error verbose
+%define parse.error detailed
 
 %code {
 #include "driver.hh"
