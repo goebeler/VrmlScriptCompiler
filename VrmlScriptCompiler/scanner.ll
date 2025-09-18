@@ -1,4 +1,6 @@
 %{
+#include <stdint.h>
+
 #include <cerrno>
 #include <climits>
 #include <cstdlib>

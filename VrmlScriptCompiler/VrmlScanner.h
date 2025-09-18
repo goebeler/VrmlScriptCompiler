@@ -1,10 +1,15 @@
 #ifndef VRML_SCANNER_H
 #define VRML_SCANNER_H
 
+#if !defined(yyFlexLexerOnce)
+#include <FlexLexer.h>
+#endif
+
+#include <iostream>
 #include "location.hh"
 #include "vrml_parser.hpp"
-#include <FlexLexer.h>
-#include <iostream>
+
+//#include <iostream>
 
 class VrmlScanner : public yyFlexLexer {
 public:
@@ -14,11 +19,11 @@ public:
   virtual ~VrmlScanner() {}
 
   // Dies ist die Methode, die Bison aufruft
-  virtual yy::symbol_type yylex(yy::location *yylloc);
+  yy::parser::symbol_type yylex(yy::location* yylloc);
 
   // Wrapper für YYText() und YYLeng() um die korrekten Methoden aufzurufen
-  const char *YYText() const { return yytext; }
-  int YYLeng() const { return yyleng; }
+  const char* YYText() const { return yyFlexLexer::YYText(); }
+  int YYLeng() const { return yyFlexLexer::YYLeng(); }
 
   void LexerError(const char *msg) { std::cerr << msg << std::endl; }
 };
