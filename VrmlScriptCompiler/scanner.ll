@@ -8,6 +8,7 @@
 #include <parser.hpp>
 %}
 
+
 %option noyywrap nounput noinput batch debug
 
 %{
@@ -33,13 +34,19 @@ blank	[ \t\r]
 
 {blank}+	loc.step();
 \n+			loc.lines(yyleng); loc.step();
-\/\/[^\n]*   /* Ignore single-line comments */
-
-"\/\*"     /* Begin multi-line comment */ BEGIN(COMMENT);
-<COMMENT>[^\n]*  /* Ignore everything inside a multi-line comment */
-<COMMENT>\*\/  /* End multi-line comment */ BEGIN(INITIAL);  /* Return to the initial state */
+\/\/[^\n]*                     /* single-line comment */
+"\/\*"                         BEGIN(COMMENT);
+<COMMENT>[^*\n]*               /* eat comment body */
+<COMMENT>\n                    loc.lines(1);
+<COMMENT>"*"+[^*/]*            /* keep eating */
+<COMMENT>"*\/"                 BEGIN(INITIAL);
 
 ","		return yy::parser::make_COMMA (loc);
+">>>"   return yy::parser::make_tRSHIFTFILL(loc);
+">>="   return yy::parser::make_tRSHIFTEQ(loc);
+"<<="   return yy::parser::make_tLSHIFTEQ(loc);
+">>"    return yy::parser::make_tRSHIFT(loc);
+"<<"    return yy::parser::make_tLSHIFT(loc);
 ">"		return yy::parser::make_tGT(loc);
 ">="	return yy::parser::make_tGE(loc);
 "=="    return yy::parser::make_tEQ(loc);
@@ -51,6 +58,12 @@ blank	[ \t\r]
 ">>>"   return yy::parser::make_tRSHIFTFILL(loc);   
 "&&"    return yy::parser::make_tLAND(loc);
 "||"    return yy::parser::make_tLOR(loc);
+
+"+="    return yy::parser::make_tPLUSEQ(loc);
+"-="    return yy::parser::make_tMINUSEQ(loc);
+"*="    return yy::parser::make_tMULTIPLYEQ(loc);
+"/="    return yy::parser::make_tDIVIDEEQ(loc);
+"%="    return yy::parser::make_tMODEQ(loc);
 
 "="     return yy::parser::make_tASSIGN (loc);
 "|"     return yy::parser::make_tOR(loc);       
@@ -73,6 +86,7 @@ blank	[ \t\r]
 ";"       return yy::parser::make_SEMICOLON (loc);
 "function" return yy::parser::make_FUNCTION(loc);
 "var"	   return yy::parser::make_VAR(loc);
+"NULL"     return yy::parser::make_NULL(loc);
 
 {int}      return make_NUMBER (yytext, loc);
 {id}       return yy::parser::make_IDENTIFIER (yytext, loc);
@@ -112,5 +126,5 @@ void driver::scan_begin ()
 
 void driver::scan_end ()
 {
-	fclose (yyin);
+	if (yyin) fclose (yyin);
 }

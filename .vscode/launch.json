@@ -11,9 +11,25 @@
             "program": "${workspaceFolder}/build/Debug/VrmlScriptCompiler.exe",
             "args": ["${workspaceFolder}/VrmlScriptCompiler/calctest"],
             "stopAtEntry": false,
-            "cwd": "${fileDirname}",
+            "cwd": "${workspaceFolder}/build/Debug",
             "environment": [],
-            "console": "externalTerminal"
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "(Windows) Claude Debug",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/VrmlScriptCompiler.exe",
+            "args": ["calctest"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/Debug",
+            "environment": [],
+            "console": "integratedTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "trace": false,
+                "engineLogging": false
+            }
         }
     ]
 }

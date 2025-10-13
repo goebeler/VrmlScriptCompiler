@@ -1,30 +1,23 @@
 #pragma once
+#include <string>
 #include <utility>
 #include <variant>
 
-namespace vrmlscript
-{
-	class SFString
-	{
-	public:
-		SFString(const std::string value)
-			: m_value(value)
-		{}
 
-		[[nodiscard]] std::string to_string () const
-		{
-			return m_value;
-		}
+namespace vrmlscript {
+class SFString {
+public:
+  SFString(const std::string value) : m_value(value) {}
 
-	private:
+  [[nodiscard]] std::string to_string() const { return m_value; }
 
-		std::string m_value;
+private:
+  std::string m_value;
+};
 
-	};
+typedef int SFInt32;
+typedef float SFFloat;
 
-	typedef int SFInt32;
-	typedef float SFFloat;
+using VrmlVariant = std::variant<std::monostate, SFInt32, SFString>;
 
-	using VrmlVariant = std::variant<std::monostate, SFInt32, SFString> ;
-
-}
+} // namespace vrmlscript

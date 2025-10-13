@@ -1,280 +1,286 @@
 #pragma once
-#include <vector>
-#include <string>
+#include "VrmlVariant.h"
+#include <iostream>
 #include <map>
 #include <memory>
-#include <iostream>
-#include "VrmlVariant.h"
+#include <string>
+#include <vector>
 
-namespace vrmlast
-{
-	class ArgumentList;
-	class FunctionDefinition;
-	class ParameterList;
-	class FunctionCallExpression;
-	class Statement;
-	class AssignmentExpression;
-	class BinaryArithmeticExpression;
-	class VariableExpression;
-	class IntConstantExpression;
-	class IntConstantExpression;
-	class Expression;
-	class StatementList;
-	class Script;
-	class FunctionDefinitionList;
-	class Block;
+namespace vrmlast {
+class ArgumentList;
+class FunctionDefinition;
+class ParameterList;
+class FunctionCallExpression;
+class Statement;
+class AssignmentExpression;
+class BinaryArithmeticExpression;
+class VariableExpression;
+class IntConstantExpression;
+class Expression;
+class StatementList;
+class Script;
+class FunctionDefinitionList;
+class Block;
 
-	class ASTVisitor
-	{
-	public:
-		virtual void visit(ArgumentList* args) = 0;
-		virtual void visit(FunctionDefinition* func) = 0;
-		virtual void visit(ParameterList* params) = 0;
-		virtual void visit(FunctionCallExpression* call) = 0;
-		virtual void visit(Statement* statement) = 0;
-		virtual void visit(AssignmentExpression* a) = 0;
-		virtual void visit(VariableExpression* a) = 0;
-		virtual void visit(IntConstantExpression* a) = 0;
-		virtual void visit(StatementList* s) = 0;
-		virtual void visit(Expression* s) = 0;
-		virtual void visit(Script* s) = 0;
-		virtual void visit(FunctionDefinitionList* s) = 0;
-		virtual void visit(Block* s) = 0;
-		virtual void visit(BinaryArithmeticExpression* s) = 0;
-	};
+class ASTVisitor {
+public:
+  virtual void visit(ArgumentList *args) = 0;
+  virtual void visit(FunctionDefinition *func) = 0;
+  virtual void visit(ParameterList *params) = 0;
+  virtual void visit(FunctionCallExpression *call) = 0;
+  virtual void visit(Statement *statement) = 0;
+  virtual void visit(AssignmentExpression *a) = 0;
+  virtual void visit(VariableExpression *a) = 0;
+  virtual void visit(IntConstantExpression *a) = 0;
+  virtual void visit(StatementList *s) = 0;
+  virtual void visit(Expression *s) = 0;
+  virtual void visit(Script *s) = 0;
+  virtual void visit(FunctionDefinitionList *s) = 0;
+  virtual void visit(Block *s) = 0;
+  virtual void visit(BinaryArithmeticExpression *s) = 0;
+};
 
-	class ASTNode
-	{
-	public:
-		virtual ~ASTNode() {};
-		virtual std::string to_string() const = 0;
-		virtual void accept(ASTVisitor& visitor) = 0;
-	};
+class ASTNode {
+public:
+  virtual ~ASTNode() {};
+  virtual std::string to_string() const = 0;
+  virtual void accept(ASTVisitor &visitor) = 0;
+};
 
-	class Scope
-	{
-	public:
-		std::map<std::string, std::unique_ptr<VariableExpression>> m_members;
-		Scope* m_parent{ nullptr };
-	};
+class Scope {
+public:
+  std::map<std::string, std::unique_ptr<VariableExpression>> m_members;
+  Scope *m_parent{nullptr};
+};
 
-	class Expression : public ASTNode
-	{
-	public:
-		std::string m_type;
-		//std::string m_value;
+class Expression : public ASTNode {
+public:
+  std::string m_type;
+  // std::string m_value;
 
-		// Geerbt über ASTNode
-		virtual std::string to_string() const = 0;
-		virtual void accept(ASTVisitor& visitor) = 0;
-		virtual vrmlscript::VrmlVariant evaluate() { return vrmlscript::VrmlVariant(std::monostate());}
-	};
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const = 0;
+  virtual void accept(ASTVisitor &visitor) = 0;
+  virtual vrmlscript::VrmlVariant evaluate() {
+    return vrmlscript::VrmlVariant(std::monostate());
+  }
+};
 
-	enum ArithmeticOperatorEnum
-	{
-		PLUS
-	};
+enum ArithmeticOperatorEnum { PLUS, MULTIPLY, DIVIDE, MOD, MINUS };
 
-	class BinaryArithmeticExpression : public Expression
-	{
-	public:
-		Expression* m_lhs;
-		Expression* m_rhs;
-		ArithmeticOperatorEnum m_op;
+class BinaryArithmeticExpression : public Expression {
+public:
+  Expression *m_lhs;
+  Expression *m_rhs;
+  ArithmeticOperatorEnum m_op;
 
-		BinaryArithmeticExpression():m_lhs(nullptr), m_rhs(nullptr), m_op(PLUS)
-		{}
+  BinaryArithmeticExpression() : m_lhs(nullptr), m_rhs(nullptr), m_op(PLUS) {}
+  BinaryArithmeticExpression(ArithmeticOperatorEnum arithmetic_operator,
+                             Expression *lhs, Expression *rhs)
+      : m_lhs(lhs), m_rhs(rhs), m_op(arithmetic_operator) {}
 
-		// Geerbt über Expression
-		[[nodiscard]] std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-		vrmlscript::VrmlVariant evaluate() override;
-	};
+  // Geerbt ï¿½ber Expression
+  [[nodiscard]] std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+  vrmlscript::VrmlVariant evaluate() override;
+};
 
-	class Script : public ASTNode
-	{
-	public:
-		FunctionDefinitionList* m_functions;
-		Scope m_scope;
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+class Script : public ASTNode {
+public:
+  FunctionDefinitionList *m_functions;
+  Scope m_scope;
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
-	class VariableExpression : public Expression
-	{
-	public:
-		VariableExpression() {}
-		VariableExpression(std::string name, vrmlscript::VrmlVariant value = std::monostate{})
-			:m_name{ name }, m_value{ value }
-		{}
+/* Lvalues are Expressions that can appear on the LHS of an assignment. */
+class LValueExpression : public Expression {
+public:
+  virtual ~LValueExpression() = default;
+};
 
-		std::string m_name;
-		vrmlscript::VrmlVariant m_value;
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+class VariableExpression : public LValueExpression {
+public:
+  VariableExpression() {}
+  VariableExpression(std::string name,
+                     vrmlscript::VrmlVariant value = std::monostate{})
+      : m_name{name}, m_value{value} {}
 
-	class VariableDeclarationExpression : public Expression
-	{
-	public:
-		VariableDeclarationExpression() {}
-		VariableDeclarationExpression(std::string name, vrmlscript::VrmlVariant value = std::monostate{})
-			:m_name{ name }
-		{}
+  std::string m_name;
+  vrmlscript::VrmlVariant m_value;
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
-		std::string m_name;
+class VariableDeclarationExpression : public Expression {
+public:
+  VariableDeclarationExpression() {}
+  VariableDeclarationExpression(
+      std::string name, vrmlscript::VrmlVariant value = std::monostate{})
+      : m_name{name} {}
 
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+  std::string m_name;
+  Expression *m_initializer{nullptr};
 
-	class IntConstantExpression : public Expression
-	{
-	public:
-		int m_value;
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
-		void set_value(int value)
-		{
-			m_value = value;
-		}
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+class IntConstantExpression : public Expression {
+public:
+  int m_value;
 
-	class AssignmentExpression : public Expression
-	{
-	public:
-		Expression* m_lhs;
-		Expression* m_rhs;
+  void set_value(int value) { m_value = value; }
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+class AssignmentExpression : public Expression {
+public:
+  LValueExpression *m_lhs;
+  Expression *m_rhs;
 
-	class Statement : public ASTNode
-	{
-	public:
-		std::vector<Expression*> m_expressions;
-		void add_expression(Expression* exp);
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
+class Statement : public ASTNode {
+public:
+  std::vector<Expression *> m_expressions;
+  void add_expression(Expression *exp);
 
-		// Geerbt über ASTNode
-		virtual std::string to_string() const override;
-		virtual void accept(ASTVisitor& visitor) override;
-	};
+  // Geerbt Ã¼ber ASTNode
+  virtual std::string to_string() const override;
+  virtual void accept(ASTVisitor &visitor) override;
+};
 
-	class StatementList : public ASTNode
-	{
-	public:
-		std::vector<Statement*> m_statements;
-		void add_statement(Statement* statement);
-		friend std::ostream& operator<<(std::ostream& out, const StatementList& statement_list);
+class StatementList : public ASTNode {
+public:
+  std::vector<Statement *> m_statements;
+  void add_statement(Statement *statement);
+  friend std::ostream &operator<<(std::ostream &out,
+                                  const StatementList &statement_list);
 
-		// Geerbt über ASTNode
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+  // Geerbt Ã¼ber ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-	class FunctionDefinition : public ASTNode
-	{
-	public:
-		std::string m_name;
-		//ArgumentList* m_arguments{ nullptr };
-		ParameterList* m_parameter_list{ nullptr };
-		Statement* m_statement{ nullptr };
-		Scope m_scope;
+class FunctionDefinition : public ASTNode {
+public:
+  std::string m_name;
+  // ArgumentList* m_arguments{ nullptr };
+  ParameterList *m_parameter_list{nullptr};
+  Statement *m_statement{nullptr};
+  Scope m_scope;
 
-		FunctionDefinition() = default;
-		void set_name(std::string name) { m_name = std::move(name); }
-		void set_arguments(ParameterList* arguments) { m_parameter_list = arguments; }
-		void set_statement(Statement* statement) { m_statement = statement; }
+  FunctionDefinition() = default;
+  void set_name(std::string name) { m_name = std::move(name); }
+  void set_arguments(ParameterList *arguments) { m_parameter_list = arguments; }
+  void set_statement(Statement *statement) { m_statement = statement; }
 
-		// Geerbt über ASTNode
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+  // Geerbt Ã¼ber ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-	class FunctionDefinitionList : public ASTNode
-	{
-	public:
-		std::vector<FunctionDefinition*> m_functions;
-		void add_function(FunctionDefinition* func);
-		Scope m_scope;
-		
-		// Geerbt über ASTNode
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+class FunctionDefinitionList : public ASTNode {
+public:
+  std::vector<FunctionDefinition *> m_functions;
+  void add_function(FunctionDefinition *func);
+  Scope m_scope;
 
-	class Block : public Statement
-	{
-	public:
-		Block() = default;
-		Scope m_scope;
-		StatementList* m_statements{ nullptr };
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+  // Geerbt Ã¼ber ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-	class ArgumentList : public ASTNode
-	{
-	public:
-		std::vector<Expression*> m_arguments;
+class Block : public Statement {
+public:
+  Block() = default;
+  Scope m_scope;
+  StatementList *m_statements{nullptr};
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-		ArgumentList() {}
+class ArgumentList : public ASTNode {
+public:
+  std::vector<Expression *> m_arguments;
 
-		void add_argument(Expression* expression);
+  ArgumentList() {}
 
-		// Geerbt über ASTNode
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+  void add_argument(Expression *expression);
 
-	class ParameterList : public ASTNode
-	{
-	public:
+  // Geerbt Ã¼ber ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-		std::vector<std::string> m_parameters;
-		void add_parameter(std::string name);
+class ParameterList : public ASTNode {
+public:
+  std::vector<std::string> m_parameters;
+  void add_parameter(std::string name);
 
-		// Geerbt über ASTNode
-		std::string to_string() const override;
-		void accept(ASTVisitor& visitor) override;
-	};
+  // Geerbt Ã¼ber ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
 
-	class FunctionCallExpression : public Expression
-	{
-	public:
-		std::string m_function_name;
-		ArgumentList* m_argument_list;
-		[[nodiscard]] std::string to_string() const override;
+class FunctionCallExpression : public Expression {
+public:
+  std::string m_function_name;
+  ArgumentList *m_argument_list;
+  Expression *m_this{nullptr};
+  Expression *m_callee{nullptr};
 
-		FunctionCallExpression(): m_argument_list(nullptr)
-		{
-		}
+  [[nodiscard]] std::string to_string() const override;
 
-		void accept(ASTVisitor& visitor) override;
-	};
+  FunctionCallExpression() : m_argument_list(nullptr) {}
 
-	//inline std::ostream& operator<<(std::ostream& out, const Expression* node)
-	//{
-	//	out << node->to_string();
-	//	return out;
-	//}
+  void accept(ASTVisitor &visitor) override;
+};
 
-	inline std::ostream& operator<<(std::ostream& out, const ASTNode* node)
-	{
-		if (!node)
-		{
-			return out;
-		}
+class IndexExpression : public LValueExpression {
+public:
+  Expression *m_collection_expression;
+  Expression *m_index_expression;
+  [[nodiscard]] std::string to_string() const override;
 
-		out << node->to_string();
-		return out;
-	}
+  IndexExpression()
+      : m_collection_expression(nullptr), m_index_expression(nullptr) {}
+
+  void accept(ASTVisitor &visitor) override;
+};
+
+class MemberAccessExpression : public LValueExpression {
+public:
+  Expression *m_object;
+  std::string m_member_name;
+  [[nodiscard]] std::string to_string() const override;
+
+  MemberAccessExpression() : m_object(nullptr), m_member_name{} {}
+
+  void accept(ASTVisitor &visitor) override;
+};
+
+// inline std::ostream& operator<<(std::ostream& out, const Expression* node)
+//{
+//	out << node->to_string();
+//	return out;
+// }
+
+inline std::ostream &operator<<(std::ostream &out, const ASTNode *node) {
+  if (!node) {
+    return out;
+  }
+
+  out << node->to_string();
+  return out;
 }
+} // namespace vrmlast

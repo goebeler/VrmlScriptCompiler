@@ -11,6 +11,7 @@
 	class driver;		
 }
 
+
 %param {driver& drv}
 
 %locations
@@ -25,11 +26,6 @@
 %define api.token.prefix {TOK_}
 %token
 END  0  "end of file"
-//ASSIGN  "="
-//MINUS   "-"
-//PLUS    "+"
-//MULTIPLY    "*"
-//DIVIDE   "/"
 LPAREN  "("
 RPAREN  ")"
 LBRACK  "{"
@@ -37,14 +33,9 @@ RBRACK  "}"
 COMMA   ","
 SEMICOLON ";"
 FUNCTION "function"
-NEW
 VAR	  "var"
 NULL  "NULL"
 ;
-
-//%left SEMICOLON
-//%left ASSIGN
-//%left PLUS
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
@@ -67,7 +58,10 @@ NULL  "NULL"
 %nterm <vrmlast::IntConstantExpression*> intConstant
 %nterm <vrmlast::FunctionDefinitionList*> functions
 %nterm <vrmlast::FunctionDefinition*> function
-%nterm <vrmlast::Expression*> exp functioncall leftexp
+%nterm <vrmlast::Expression*> exp 
+%nterm <vrmlast::Expression*> primary
+%nterm <vrmlast::Expression*> postfix
+%nterm <vrmlast::LValueExpression*> leftexp
 %nterm <vrmlast::Statement*> statement
 %nterm <vrmlast::StatementList*> statements
 %nterm <vrmlast::Block*> statement_block
@@ -77,9 +71,6 @@ NULL  "NULL"
 %nterm <vrmlast::VariableExpression*> variable_reference
 %nterm <vrmlast::VariableDeclarationExpression*> variable_decl
 %nterm <vrmlast::Script*> unit
-%nterm <vrmlast::BinaryArithmeticExpression*> binArithExp
-
-
 
 %printer { yyo << $$; } <*>;
 
@@ -97,7 +88,7 @@ functions:
 	;
 
 function:
-	FUNCTION IDENTIFIER "(" parameters ")" statement{
+	FUNCTION IDENTIFIER LPAREN  parameters RPAREN statement_block{
 														$$ = new vrmlast::FunctionDefinition();
 														$$->set_name($2); 
 														$$->set_arguments($4); 
@@ -121,23 +112,29 @@ statements:
 	;
 
 statement:
-	statement_block			{$$ = $1;}
-	|exp ";"				{$$ = new vrmlast::Statement();  $$->add_expression($1); }	
+	statement_block				{ $$ = $1;}
+	|exp SEMICOLON				{ $$ = new vrmlast::Statement();  $$->add_expression($1); }	
+	|variable_decl SEMICOLON	{ $$ = new vrmlast::Statement(); $$->add_expression($1); }
 	;
 
 variable_decl:
-	VAR IDENTIFIER		{$$ = = new vrmlast::VariableDeclarationExpression();  $$->m_name = $2;}
+	VAR IDENTIFIER					{ $$ = new vrmlast::VariableDeclarationExpression();  $$->m_name = $2;}
+	| VAR IDENTIFIER tASSIGN exp	{ $$ = new vrmlast::VariableDeclarationExpression();  $$->m_name = $2; $$->m_initializer = $4; }
 
 variable_reference:
-	IDENTIFIER			{$$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
+	IDENTIFIER			{ $$ = new vrmlast::VariableExpression();  $$->m_name = $1; }
 	;
 
+/* L-values for assignment: x, x.y, x[expr], chained */
 leftexp:
 	variable_reference	{$$ = $1;}
+	| leftexp LBRACK exp RBRACK            { auto ie = new vrmlast::IndexExpression(); ie->m_collection_expression = $1,ie->m_index_expression = $3; $$=ie; }
+	| leftexp tDOT IDENTIFIER              { auto mae = new vrmlast::MemberAccessExpression(); mae->m_object = $1; mae->m_member_name = $3; $$ = mae; }
 	;
 
+/* Assignment (lowest precedence, right-associative) */
 assignment:
-	leftexp "=" exp			{ $$ = new vrmlast::AssignmentExpression();  $$->m_lhs = $1; $$->m_rhs = $3; }
+	leftexp tASSIGN exp			{ $$ = new vrmlast::AssignmentExpression();  $$->m_lhs = $1; $$->m_rhs = $3; }
 	;
 
 arguments: 
@@ -146,35 +143,50 @@ arguments:
 	| %empty				{ $$ = new vrmlast::ArgumentList(); }
 
 
-functioncall:
-	IDENTIFIER "(" arguments ")" ";" {}
-	;
-
 %left "+" "-";
 %left "*" "/";
 
 intConstant:
-	"number"					{ $$ = new vrmlast::IntConstantExpression();  $$->set_value($1); }
+	NUMBER					{ $$ = new vrmlast::IntConstantExpression();  $$->set_value($1); }
 	;
 
-binArithExp:
-	exp "+" exp					{
-									$$ = new vrmlast::BinaryArithmeticExpression();
-									$$->m_lhs = $1;
-									$$->m_rhs = $3;
-									$$->m_op = vrmlast::ArithmeticOperatorEnum::PLUS;
-								}
-//	| exp "-" exp				{$$ = $1 - $3;}
-//	| exp "*" exp				{$$ = $1 * $3;}
-//	| exp "/" exp				{$$ = $1 / $3;}
+/* Primary expressions (atoms) */
+primary:
+      intConstant                          { $$ = $1; }
+    | variable_reference                   { $$ = $1; }
+    | LPAREN exp RPAREN                    { $$ = $2; }
+;
+
+/* Postfix chain for member/index/call in expressions */
+postfix:
+      primary                              { $$ = $1; }
+    | postfix LBRACK exp RBRACK            { auto ie = new vrmlast::IndexExpression(); ie->m_collection_expression = $1; ie->m_index_expression = $3; $$ = ie;}
+	| postfix tDOT IDENTIFIER              { auto mae = new vrmlast::MemberAccessExpression(); mae->m_object = $1; mae->m_member_name = $3; $$ = mae; }
+	/* 1) Member call: obj.name(args) */
+    | postfix tDOT IDENTIFIER LPAREN arguments RPAREN
+      { auto call = new vrmlast::FunctionCallExpression();
+        call->m_this = $1;
+        call->m_function_name = $3;
+        call->m_argument_list = $5;
+        $$ = call; }
+    /* 2) Free-standing call: name(args) */
+    | IDENTIFIER LPAREN arguments RPAREN
+      { auto call = new vrmlast::FunctionCallExpression();
+        call->m_function_name = $1;
+        call->m_argument_list = $3;
+        $$ = call; }
+;
 
 exp:
-	intConstant					{ $$ = $1; }
-	| assignment				{ $$ = $1; }
-	| binArithExp				{ $$ = $1; }
-	| variable_reference		{ $$ = $1; }
-	| "(" exp ")"				{ $$ = $2;}
-	| functioncall				{ $$ = $1;}
+	assignment					{ $$ = $1; }
+	| postfix					{ $$ = $1; }
+	/*Multiplicative*/
+	| exp tMULTIPLY exp			{$$ = new vrmlast::BinaryArithmeticExpression(vrmlast::ArithmeticOperatorEnum::MULTIPLY, $1, $3); }
+	| exp tDIVIDE exp			{$$ = new vrmlast::BinaryArithmeticExpression(vrmlast::ArithmeticOperatorEnum::DIVIDE, $1, $3); }
+	| exp tMOD exp			{$$ = new vrmlast::BinaryArithmeticExpression(vrmlast::ArithmeticOperatorEnum::MOD, $1, $3); }
+	/*Additive*/
+	| exp tPLUS exp			{$$ = new vrmlast::BinaryArithmeticExpression(vrmlast::ArithmeticOperatorEnum::PLUS, $1, $3); }
+	| exp tMINUS exp			{$$ = new vrmlast::BinaryArithmeticExpression(vrmlast::ArithmeticOperatorEnum::MINUS, $1, $3); }
 //	| %empty					{}
 %%
 
