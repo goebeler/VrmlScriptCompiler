@@ -1,4 +1,9 @@
+
 %{
+#ifdef _MSC_VER
+	#define _CRT_SECURE_NO_WARNINGS
+	#include <stdint.h>
+#endif
 #include <cerrno>
 #include <climits>
 #include <cstdlib>
@@ -6,6 +11,9 @@
 #include <string>
 #include "driver.hh"
 #include <parser.hpp>
+
+#define RET(TOK)        do { drv.location = loc; return yy::parser::make_##TOK(loc); } while(0)
+#define RETV(TOK,VAL)   do { drv.location = loc; return yy::parser::make_##TOK((VAL), loc); } while(0)
 %}
 
 
@@ -87,6 +95,15 @@ blank	[ \t\r]
 "function" return yy::parser::make_FUNCTION(loc);
 "var"	   return yy::parser::make_VAR(loc);
 "NULL"     return yy::parser::make_NULL(loc);
+
+'([^\\'\n]|\\.|\n)*'    {
+    std::string raw(yytext, yyleng);
+    std::string inner = raw.substr(1, raw.size() - 2);
+    // Advance location by the number of literal newlines inside the token
+    for (char c : inner) if (c == '\n') loc.lines(1);
+    RETV(STRING, inner);
+}
+
 
 {int}      return make_NUMBER (yytext, loc);
 {id}       return yy::parser::make_IDENTIFIER (yytext, loc);

@@ -269,6 +269,18 @@ public:
   void accept(ASTVisitor &visitor) override;
 };
 
+class StringConstantExpression : public Expression {
+public:
+  std::string m_value;
+
+  [[nodiscard]] std::string to_string() const override {
+    // Re-emit with single quotes, preserving exactly what the user wrote:
+    // escaped sequences stay escaped; literal newlines remain literal.
+    return "'" + m_value + "'";
+  }
+  void accept(ASTVisitor &visitor) override { visitor.visit(static_cast<Expression*>(this)); }
+};
+
 // inline std::ostream& operator<<(std::ostream& out, const Expression* node)
 //{
 //	out << node->to_string();

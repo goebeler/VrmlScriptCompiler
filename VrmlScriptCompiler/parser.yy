@@ -39,6 +39,7 @@ NULL  "NULL"
 
 %token <std::string> IDENTIFIER "identifier"
 %token <int> NUMBER "number"
+%token <std::string> STRING "string"
 
 %right  tASSIGN tPLUSEQ tMINUSEQ tMULTIPLYEQ tDIVIDEEQ tMODEQ tRSHIFTEQ tLSHIFTEQ tRSHIFTFILLEQ tANDEQ tXOREQ tOREQ
 %left   tCONDTEST tCONDSEP
@@ -152,9 +153,10 @@ intConstant:
 
 /* Primary expressions (atoms) */
 primary:
-      intConstant                          { $$ = $1; }
-    | variable_reference                   { $$ = $1; }
-    | LPAREN exp RPAREN                    { $$ = $2; }
+      intConstant			{ $$ = $1; }
+    | variable_reference	{ $$ = $1; }
+    | LPAREN exp RPAREN		{ $$ = $2; }
+	| STRING				{ auto s = new vrmlast::StringConstantExpression(); s->m_value = $1; $$ = s; }			
 ;
 
 /* Postfix chain for member/index/call in expressions */
