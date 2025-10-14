@@ -31,9 +31,6 @@ blank	[ \t\r]
 	#define YY_USER_ACTION loc.columns(yyleng);
 %}
 
-%x COMMENT  
-	/* Define COMMENT as a start condition for multi-line comments */
-
 %%
 %{
 	yy::location loc = drv.location;
@@ -42,12 +39,12 @@ blank	[ \t\r]
 
 {blank}+	loc.step();
 \n+			loc.lines(yyleng); loc.step();
-\/\/[^\n]*                     /* single-line comment */
-"\/\*"                         BEGIN(COMMENT);
-<COMMENT>[^*\n]*               /* eat comment body */
-<COMMENT>\n                    loc.lines(1);
-<COMMENT>"*"+[^*/]*            /* keep eating */
-<COMMENT>"*\/"                 BEGIN(INITIAL);
+/* comments (kept without states) */
+"//"[^\n]*                      /* skip single-line comment (also works after code) */
+"/*"([^*]|\*+[^*/])*\*+"/"      { /* skip multi-line comment, count newlines */
+    for (int i = 0; i < (int)yyleng; ++i)
+        if (yytext[i] == '\n') loc.lines(1);
+}
 
 ","		return yy::parser::make_COMMA (loc);
 ">>>"   return yy::parser::make_tRSHIFTFILL(loc);
@@ -61,9 +58,6 @@ blank	[ \t\r]
 "<"     return yy::parser::make_tLT(loc);
 "<="	return yy::parser::make_tLE(loc);
 "!="    return yy::parser::make_tNE(loc);
-">>"    return yy::parser::make_tRSHIFT(loc);       
-"<<"    return yy::parser::make_tLSHIFT(loc);       
-">>>"   return yy::parser::make_tRSHIFTFILL(loc);   
 "&&"    return yy::parser::make_tLAND(loc);
 "||"    return yy::parser::make_tLOR(loc);
 
@@ -96,7 +90,7 @@ blank	[ \t\r]
 "var"	   return yy::parser::make_VAR(loc);
 "NULL"     return yy::parser::make_NULL(loc);
 
-'([^\\'\n]|\\.|\n)*'    {
+'([^'\\\n]|\\.|\n)*'	{
     std::string raw(yytext, yyleng);
     std::string inner = raw.substr(1, raw.size() - 2);
     // Advance location by the number of literal newlines inside the token
