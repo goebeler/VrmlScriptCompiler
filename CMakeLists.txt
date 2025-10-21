@@ -4,6 +4,10 @@ project(VrmlScriptCompiler)
 set(CMAKE_CXX_STANDARD 20)
 set(CPM_DOWNLOAD_VERSION 0.32.0)
 
+if(POLICY CMP0169)
+  cmake_policy(SET CMP0169 OLD)
+endif()
+
 if(CPM_SOURCE_CACHE)
   set(CPM_DOWNLOAD_LOCATION "${CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
 elseif(DEFINED ENV{CPM_SOURCE_CACHE})
@@ -113,6 +117,6 @@ if(MSVC)
     COMPILE_OPTIONS "/wd4996;/wd4065"
   )
   set_source_files_properties(${FLEX_vrml-scanner_OUTPUTS} PROPERTIES
-    COMPILE_OPTIONS "/wd4996;/wd4005"
+    COMPILE_OPTIONS "/wd4996;/wd4005;/wd4065"
   )
 endif()
