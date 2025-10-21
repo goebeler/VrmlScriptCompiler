@@ -5,8 +5,26 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "fmt/format.h"
 
 namespace vrmlast {
+
+enum class RelationalOperatorEnum { EQ, NE, LT, LE, GT, GE };
+enum class LogicalOperatorEnum { LAND, LOR };
+enum class CompoundAssignOperatorEnum {
+    PLUS_EQ,
+    MINUS_EQ,
+    MULTIPLY_EQ,
+    DIVIDE_EQ,
+    MOD_EQ,
+    LSHIFT_EQ,
+    RSHIFT_EQ,
+    RSHIFTFILL_EQ,
+    AND_EQ,
+    XOR_EQ,
+    OR_EQ
+};
+
 class ArgumentList;
 class FunctionDefinition;
 class ParameterList;
@@ -14,6 +32,8 @@ class FunctionCallExpression;
 class Statement;
 class AssignmentExpression;
 class BinaryArithmeticExpression;
+class BinaryRelationalExpression;
+class BinaryLogicalExpression;
 class VariableExpression;
 class IntConstantExpression;
 class Expression;
@@ -21,6 +41,13 @@ class StatementList;
 class Script;
 class FunctionDefinitionList;
 class Block;
+class ReturnStatement;
+class IfStatement;
+class WhileStatement;
+class NewExpression;
+class NullLiteralExpression;
+class UnaryNotExpression;
+class CompoundAssignmentExpression;
 
 class ASTVisitor {
 public:
@@ -36,8 +63,17 @@ public:
   virtual void visit(Expression *s) = 0;
   virtual void visit(Script *s) = 0;
   virtual void visit(FunctionDefinitionList *s) = 0;
-  virtual void visit(Block *s) = 0;
   virtual void visit(BinaryArithmeticExpression *s) = 0;
+  virtual void visit(Block *s) = 0;
+  virtual void visit(BinaryRelationalExpression *s) = 0;
+  virtual void visit(BinaryLogicalExpression *s) = 0;
+  virtual void visit(UnaryNotExpression *s) = 0;
+  virtual void visit(NullLiteralExpression *s) = 0;
+  virtual void visit(ReturnStatement *s) = 0;
+  virtual void visit(IfStatement *s) = 0;
+  virtual void visit(WhileStatement *s) = 0;
+  virtual void visit(NewExpression *s) = 0;
+  virtual void visit(CompoundAssignmentExpression *s) = 0;
 };
 
 class ASTNode {
@@ -53,6 +89,8 @@ public:
   Scope *m_parent{nullptr};
 };
 
+
+
 class Expression : public ASTNode {
 public:
   std::string m_type;
@@ -64,6 +102,44 @@ public:
   virtual vrmlscript::VrmlVariant evaluate() {
     return vrmlscript::VrmlVariant(std::monostate());
   }
+};
+
+class UnaryNotExpression : public Expression {
+public:
+  Expression *m_expr{nullptr};
+  explicit UnaryNotExpression(Expression *e) : m_expr(e) {}
+  std::string to_string() const override { return "!(" + (m_expr?m_expr->to_string():"") + ")"; }
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class BinaryRelationalExpression : public Expression {
+public:
+  Expression *m_lhs{nullptr};
+  Expression *m_rhs{nullptr};
+  RelationalOperatorEnum m_op{RelationalOperatorEnum::EQ};
+  BinaryRelationalExpression() = default;
+  BinaryRelationalExpression(RelationalOperatorEnum op, Expression *lhs, Expression *rhs)
+      : m_lhs(lhs), m_rhs(rhs), m_op(op) {}
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class BinaryLogicalExpression : public Expression {
+public:
+  Expression *m_lhs{nullptr};
+  Expression *m_rhs{nullptr};
+  LogicalOperatorEnum m_op{LogicalOperatorEnum::LAND};
+  BinaryLogicalExpression() = default;
+  BinaryLogicalExpression(LogicalOperatorEnum op, Expression *lhs, Expression *rhs)
+      : m_lhs(lhs), m_rhs(rhs), m_op(op) {}
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class NullLiteralExpression : public Expression {
+public:
+  std::string to_string() const override { return "null"; }
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
 };
 
 enum ArithmeticOperatorEnum { PLUS, MULTIPLY, DIVIDE, MOD, MINUS };
@@ -79,7 +155,7 @@ public:
                              Expression *lhs, Expression *rhs)
       : m_lhs(lhs), m_rhs(rhs), m_op(arithmetic_operator) {}
 
-  // Geerbt �ber Expression
+  // Geerbt über Expression
   [[nodiscard]] std::string to_string() const override;
   void accept(ASTVisitor &visitor) override;
   vrmlscript::VrmlVariant evaluate() override;
@@ -149,6 +225,41 @@ public:
   virtual void accept(ASTVisitor &visitor) override;
 };
 
+class CompoundAssignmentExpression : public AssignmentExpression {
+public:
+  CompoundAssignOperatorEnum m_op{CompoundAssignOperatorEnum::PLUS_EQ};
+
+  CompoundAssignmentExpression() = default;
+
+  [[nodiscard]] static constexpr std::string_view op_to_string(
+      CompoundAssignOperatorEnum op) noexcept {
+    using enum CompoundAssignOperatorEnum;
+    switch (op) {
+      case PLUS_EQ:        return "+=";
+      case MINUS_EQ:       return "-=";
+      case MULTIPLY_EQ:    return "*=";
+      case DIVIDE_EQ:      return "/=";
+      case MOD_EQ:         return "%=";
+      case LSHIFT_EQ:      return "<<=";
+      case RSHIFT_EQ:      return ">>=";
+      case RSHIFTFILL_EQ:  return ">>>=";
+      case AND_EQ:         return "&=";
+      case XOR_EQ:         return "^=";
+      case OR_EQ:          return "|=";
+    }
+    return "?=";
+  }
+
+  std::string to_string() const override {
+    return fmt::format("{} {} {}",
+                       m_lhs ? m_lhs->to_string() : "<null>",
+                       op_to_string(m_op),
+                       m_rhs ? m_rhs->to_string() : "<null>");
+  }
+
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
 class Statement : public ASTNode {
 public:
   std::vector<Expression *> m_expressions;
@@ -157,6 +268,53 @@ public:
   // Geerbt über ASTNode
   virtual std::string to_string() const override;
   virtual void accept(ASTVisitor &visitor) override;
+};
+
+class ReturnStatement : public Statement {
+public:
+  Expression *m_expression{nullptr};
+  std::string to_string() const override {
+    return std::string("return ") + (m_expression?m_expression->to_string():"") + ";";
+  }
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class IfStatement : public Statement {
+public:
+  Expression *m_condition{nullptr};
+  Block *m_then{nullptr};
+  Block *m_else{nullptr};
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class WhileStatement : public Statement {
+public:
+  Expression *m_condition{nullptr};
+  Block *m_body{nullptr};
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
+};
+
+class ArgumentList : public ASTNode {
+public:
+  std::vector<Expression *> m_arguments;
+
+  ArgumentList() {}
+
+  void add_argument(Expression *expression);
+
+  // Geerbt über ASTNode
+  std::string to_string() const override;
+  void accept(ASTVisitor &visitor) override;
+};
+
+class NewExpression : public Expression {
+public:
+  std::string m_type_name;
+  ArgumentList *m_arguments{nullptr};
+  std::string to_string() const override { return "new " + m_type_name + "(" + (m_arguments?m_arguments->to_string():"") + ")"; }
+  void accept(ASTVisitor &visitor) override { visitor.visit(this); }
 };
 
 class StatementList : public ASTNode {
@@ -205,19 +363,6 @@ public:
   Block() = default;
   Scope m_scope;
   StatementList *m_statements{nullptr};
-  std::string to_string() const override;
-  void accept(ASTVisitor &visitor) override;
-};
-
-class ArgumentList : public ASTNode {
-public:
-  std::vector<Expression *> m_arguments;
-
-  ArgumentList() {}
-
-  void add_argument(Expression *expression);
-
-  // Geerbt über ASTNode
   std::string to_string() const override;
   void accept(ASTVisitor &visitor) override;
 };

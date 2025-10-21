@@ -39,7 +39,6 @@ blank	[ \t\r]
 
 {blank}+	loc.step();
 \n+			loc.lines(yyleng); loc.step();
-/* comments (kept without states) */
 "//"[^\n]*                      /* skip single-line comment (also works after code) */
 "/*"([^*]|\*+[^*/])*\*+"/"      { /* skip multi-line comment, count newlines */
     for (int i = 0; i < (int)yyleng; ++i)
@@ -88,7 +87,12 @@ blank	[ \t\r]
 ";"       return yy::parser::make_SEMICOLON (loc);
 "function" return yy::parser::make_FUNCTION(loc);
 "var"	   return yy::parser::make_VAR(loc);
-"NULL"     return yy::parser::make_NULL(loc);
+"null"     return yy::parser::make_NULL(loc);
+"if"       return yy::parser::make_IF(loc);
+"else"     return yy::parser::make_ELSE(loc);
+"while"    return yy::parser::make_WHILE(loc);
+"return"   return yy::parser::make_RETURN(loc);
+"new"      return yy::parser::make_NEW(loc);
 
 '([^'\\\n]|\\.|\n)*'	{
     std::string raw(yytext, yyleng);

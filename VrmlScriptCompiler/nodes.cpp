@@ -186,16 +186,39 @@ struct add_visitor {
 } adder2;
 
 vrmlscript::VrmlVariant BinaryArithmeticExpression::evaluate() {
-  /*const auto add = [](auto left, auto right)->vrmlscript::VrmlVariant
-  {
-          using TLEFT = std::decay_t<decltype(left)>;
-          using TRIGHT = std::decay_t<decltype(right)>;
-
-  };*/
-
   std::visit(adder2, m_lhs->evaluate(), m_rhs->evaluate());
   return vrmlscript::VrmlVariant{};
 }
+
+std::string BinaryRelationalExpression::to_string() const {
+  std::string op;
+  switch (m_op) {
+  case RelationalOperatorEnum::EQ: op = "=="; break;
+  case RelationalOperatorEnum::NE: op = "!="; break;
+  case RelationalOperatorEnum::LT: op = "<"; break;
+  case RelationalOperatorEnum::LE: op = "<="; break;
+  case RelationalOperatorEnum::GT: op = ">"; break;
+  case RelationalOperatorEnum::GE: op = ">="; break;
+  }
+  return fmt::format("{0} {1} {2}", m_lhs?m_lhs->to_string():"<null>", op, m_rhs?m_rhs->to_string():"<null>");
+}
+
+std::string BinaryLogicalExpression::to_string() const {
+  std::string op = (m_op == LogicalOperatorEnum::LAND) ? "&&" : "||";
+  return fmt::format("{0} {1} {2}", m_lhs?m_lhs->to_string():"<null>", op, m_rhs?m_rhs->to_string():"<null>");
+}
+
+std::string IfStatement::to_string() const {
+  const auto thenStr = m_then ? m_then->to_string() : "{}";
+  const auto elseStr = m_else ? fmt::format(" else {}", m_else->to_string()) : "";
+  return fmt::format("if ({}) {}{}", m_condition?m_condition->to_string():"<null>", thenStr, elseStr);
+}
+
+std::string WhileStatement::to_string() const {
+  const auto bodyStr = m_body ? m_body->to_string() : "{}";
+  return fmt::format("while ({}) {}", m_condition?m_condition->to_string():"<null>", bodyStr);
+}
+
 
 std::string Block::to_string() const {
   return fmt::format("{{\n{0}\n}}", this->m_statements->to_string());

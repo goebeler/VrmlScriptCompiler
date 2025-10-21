@@ -26,6 +26,15 @@ namespace vrmlast {
 		virtual void visit(FunctionDefinitionList* s) override;
 		virtual void visit(BinaryArithmeticExpression* s) override;
 		virtual void visit(Block* s) override;
+		virtual void visit(BinaryRelationalExpression *s) override;
+		virtual void visit(BinaryLogicalExpression *s) override;
+		virtual void visit(UnaryNotExpression *s) override;
+		virtual void visit(NullLiteralExpression *s) override;
+		virtual void visit(ReturnStatement *s) override;
+		virtual void visit(IfStatement *s) override;
+		virtual void visit(WhileStatement *s) override;
+		virtual void visit(NewExpression *s) override;
+		virtual void visit(CompoundAssignmentExpression *s) override;
 	};
 }
 

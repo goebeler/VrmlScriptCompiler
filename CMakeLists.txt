@@ -94,3 +94,25 @@ add_custom_command(TARGET ${PROJECT_NAME}
         "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
     VERBATIM
 )
+
+# --- Silence nur für Fremd- und generierten Code (MSVC) ---
+if(MSVC)
+  # fmt (Third-Party): nur dessen Deprecation-Warnungen abschalten
+  if(TARGET fmt)
+    target_compile_definitions(fmt PRIVATE
+      _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+      _SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS
+    )
+  endif()
+
+  # Bison/Flex: nur bei den generierten Dateien Warnungen unterdrücken
+  #  - /wd4996: "deprecated/unsafe" C-APIs in Generatorcode
+  #  - /wd4065: switch mit default aber ohne case (aus parser.hpp)
+  #  - /wd4005: Makro-Neudefinitionen (scanner.cpp vs. stdint.h)
+  set_source_files_properties(${BISON_vrml-parser_OUTPUTS} PROPERTIES
+    COMPILE_OPTIONS "/wd4996;/wd4065"
+  )
+  set_source_files_properties(${FLEX_vrml-scanner_OUTPUTS} PROPERTIES
+    COMPILE_OPTIONS "/wd4996;/wd4005"
+  )
+endif()
