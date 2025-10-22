@@ -143,3 +143,21 @@ void driver::scan_end ()
 {
 	if (yyin) fclose (yyin);
 }
+
+// ------------------------------------------------------------
+// Scanner-Hooks – String
+// ------------------------------------------------------------
+
+void driver::scan_string_begin(const char* data, int len)
+{
+    string_buf_ = yy_scan_bytes(data, len);
+    yy_switch_to_buffer(string_buf_);
+}
+
+void driver::scan_string_end()
+{
+    if (string_buf_) {
+        yy_delete_buffer(string_buf_);
+        string_buf_ = nullptr;
+    }
+}

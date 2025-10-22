@@ -92,7 +92,7 @@ std::string ParameterList::to_string() const {
   return result;
 }
 
-void ParameterList::accept(ASTVisitor &visitor) {}
+void ParameterList::accept(ASTVisitor &visitor) { visitor.visit(this);}
 
 void ParameterList::add_parameter(std::string name) {
   m_parameters.push_back(name);

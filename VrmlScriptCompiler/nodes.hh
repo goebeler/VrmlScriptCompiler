@@ -332,7 +332,6 @@ public:
 class FunctionDefinition : public ASTNode {
 public:
   std::string m_name;
-  // ArgumentList* m_arguments{ nullptr };
   ParameterList *m_parameter_list{nullptr};
   Statement *m_statement{nullptr};
   Scope m_scope;

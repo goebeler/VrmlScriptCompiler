@@ -188,14 +188,14 @@ comp_assign_op:
 	;
 
 if_statement:
-	IF LPAREN exp RPAREN statement_block ELSE statement_block
+	IF LPAREN exp RPAREN statement ELSE statement
 	{ auto n = new vrmlast::IfStatement(); n->m_condition = $3; n->m_then = static_cast<vrmlast::Block*>($5); n->m_else = static_cast<vrmlast::Block*>($7); $$ = n; }
-	| IF LPAREN exp RPAREN statement_block
+	| IF LPAREN exp RPAREN statement
 	{ auto n = new vrmlast::IfStatement(); n->m_condition = $3; n->m_then = static_cast<vrmlast::Block*>($5); n->m_else = nullptr; $$ = n; }
 	;
 
 while_statement:
-	WHILE LPAREN exp RPAREN statement_block
+	WHILE LPAREN exp RPAREN statement
 	{ auto n = new vrmlast::WhileStatement(); n->m_condition = $3; n->m_body = static_cast<vrmlast::Block*>($5); $$ = n; }
 	;
 

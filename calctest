@@ -1,5 +1,51 @@
-function test (value)
+/* Multi-line header comment
+   Covers: functions, vars, arithmetic, comparisons, logic, loops, returns,
+   strings (single/double with escapes and literal newlines), NEW, NULL, comments. */
+
+// Helper: clamp with multiple early returns
+function clamp(x, lo, hi)
 {
-	three = 3;
-	two = 2 + three;
+    if (x < lo) return lo;              // early return 1
+    if (x > hi) return hi;              // early return 2
+    return x;                           // fallthrough
 }
+
+function initialize()
+{
+    // Declarations + arithmetic precedence
+    var a = 5;
+    var b = 2 * (a + 3) - 4 / 2;        // parens, +, -, *, /
+
+    // Strings: escaped newline and a literal newline in single quotes
+    var s = 'foo\nbar';
+    var m = 'line1\n' +
+            'line2';                    // concatenation with +
+
+    /* Block comment spanning lines.
+       Also ensures lexer handles comment-newlines correctly. */
+
+    // Comparisons + logical AND/OR
+    if ((b >= 10) && (s != null)) {
+        print('ok');                    // trailing comment allowed // yes
+    } else {
+        print('fail');
+    }
+
+    // While loop, increment, string concat with number
+    var i = 0;
+    while (i < 3) {
+        print('i=' + i);
+        i = i + 1;
+    }
+
+    // Usage of NEW token; concrete type name is an identifier
+    var obj = new SFNode();
+    obj = null;                         // reset
+
+    // Function call with multiple args
+    var c = clamp(b, 0, 10);
+    print('clamped=' + c);
+
+    return b;                           // final return
+}
+// End of script

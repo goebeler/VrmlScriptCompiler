@@ -30,6 +30,22 @@
                 "trace": false,
                 "engineLogging": false
             }
-        }
+        },
+        {
+      "name": "Debug Textual (detached PowerShell)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/VrmlScriptUI/ui_app.py",
+      "console": "externalTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "subProcess": true,
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoExit"]
+      }
+    }
     ]
 }

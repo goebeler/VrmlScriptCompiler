@@ -8,6 +8,8 @@ if(POLICY CMP0169)
   cmake_policy(SET CMP0169 OLD)
 endif()
 
+
+
 if(CPM_SOURCE_CACHE)
   set(CPM_DOWNLOAD_LOCATION "${CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
 elseif(DEFINED ENV{CPM_SOURCE_CACHE})
@@ -33,7 +35,16 @@ CPMAddPackage(
   GIT_TAG 8.0.1
 )
 
+CPMAddPackage(
+  NAME        nlohmann_json
+  GITHUB_REPOSITORY nlohmann/json
+  VERSION     3.11.3
+  OPTIONS     "JSON_BuildTests OFF"
+)
+
 add_subdirectory(StackMachine EXCLUDE_FROM_ALL)
+
+
 
 set(SRCFILES
     VrmlScriptCompiler.cpp
@@ -45,6 +56,7 @@ set(SRCFILES
     AssignVisitor.cpp
     EvaluateVisitor.cpp
     PrintASTVisitor.cpp
+    ast_json.cpp
 )
 
 set(HEADER
@@ -56,6 +68,7 @@ set(HEADER
     ScopeAnalysis.h
     VrmlVariant.h
     nodes.hh
+    ast_json.hpp
 )
 
 set(DATAFILES
@@ -78,9 +91,22 @@ ADD_FLEX_BISON_DEPENDENCY(vrml-scanner vrml-parser)
 
 
 
-add_executable(${PROJECT_NAME} ${SRCFILES} ${HEADER} ${BISON_vrml-parser_OUTPUTS} ${FLEX_vrml-scanner_OUTPUTS})
+#add_executable(${PROJECT_NAME} ${SRCFILES} ${HEADER} ${BISON_vrml-parser_OUTPUTS} ${FLEX_vrml-scanner_OUTPUTS})
+add_library(${PROJECT_NAME} ${SRCFILES} ${HEADER} ${BISON_vrml-parser_OUTPUTS} ${FLEX_vrml-scanner_OUTPUTS})
 target_include_directories(${PROJECT_NAME} PUBLIC Stackmachine "${CMAKE_CURRENT_SOURCE_DIR}/VrmlScriptCompiler" "${CMAKE_CURRENT_BINARY_DIR}")
-target_link_libraries(${PROJECT_NAME} PRIVATE StackMachine fmt)
+#target_link_libraries(${PROJECT_NAME} PRIVATE StackMachine fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE StackMachine fmt nlohmann_json::nlohmann_json)
+
+add_executable(vrmlsc
+  VrmlScriptCompiler/vrmlsc_main.cpp
+  VrmlScriptCompiler/ast_json.hpp
+  VrmlScriptCompiler/ast_json.cpp
+)
+
+target_include_directories(vrmlsc PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/VrmlScriptCompiler" "${CMAKE_CURRENT_BINARY_DIR}")
+target_link_libraries(vrmlsc PRIVATE ${PROJECT_NAME} fmt nlohmann_json::nlohmann_json)
+# (Optional) Visual Studio Ordner
+set_target_properties(vrmlsc PROPERTIES FOLDER "tools")
 
 set_target_properties(StackMachine-bin PROPERTIES EXCLUDE_FROM_ALL FALSE)
 set_target_properties(${PROJECT_NAME} PROPERTIES
