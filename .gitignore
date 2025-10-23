@@ -42,3 +42,4 @@ build**/
 /cmake/
 /CMakeFiles/
 *.cmake
+/.venv/Lib/
